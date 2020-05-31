@@ -1,0 +1,26 @@
+version: '2'
+
+services:
+  survey:
+    build: .
+    restart: on-failure:5
+    volumes:
+      - ./survey:/survey
+    env_file:
+      - ./.flaskenv
+    ports:
+      - 5000:5000
+    depends_on:
+      - mongo_database
+    links:
+      - "mongo_database:mongo_db"
+
+  mongo_database:
+    image: mongo:4.2
+    ports:
+      - 27017:27017
+    env_file: mongo.conf
+    restart: on-failure:5
+    command: mongod --auth
+    volumes:
+      - ./data:/db
