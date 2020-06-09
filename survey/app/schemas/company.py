@@ -17,7 +17,6 @@ class CompanySchema(BaseSchema, UniqueIdMixin, TimestampMixin):
     founded_year = EscapedStr(max_length=20, required=True)
 
 
-
 class CompanyInvitationSchema(BaseSchema, UniqueIdMixin, TimestampMixin):
     __model__ = models.CompanyInvitation
 
