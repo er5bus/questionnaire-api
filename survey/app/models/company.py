@@ -29,5 +29,5 @@ class CompanyInvitation(mongo.DynamicDocument):
 
     def generate_token(self):
         s = Serializer(current_app.config['SECRET_KEY'])
-        return s.dumps({ 'id': self.id }).decode('utf-8')
+        self.token = s.dumps({ 'email': self.email }).decode('utf-8')
 

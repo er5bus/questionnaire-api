@@ -18,7 +18,6 @@ The Team.
     route_name = "invitation_company_list_create"
 
 
-
 class CompanyInvitationListCreateView(generics.ListCreateAPIView):
 
     route_path = "/invitations/company"
