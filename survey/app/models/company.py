@@ -18,7 +18,9 @@ class Company(mongo.Document):
     author = mongo.ReferenceField('survey.models.user.User')
 
 
-class CompanyInvitation(mongo.DynamicDocument):
+class ManagerInvitation(mongo.DynamicDocument):
+
+    company = mongo.StringField()
     email = mongo.EmailField()
     name = mongo.StringField()
     subject = mongo.StringField()
@@ -26,8 +28,9 @@ class CompanyInvitation(mongo.DynamicDocument):
     expired_at = mongo.DateTimeField(default=datetime.utcnow)
 
     author = mongo.ReferenceField('survey.models.user.User')
+    #company = mongo.ReferenceField(Company)
 
     def generate_token(self):
         s = Serializer(current_app.config['SECRET_KEY'])
-        return s.dumps({ 'id': self.id }).decode('utf-8')
-
+        self.token = s.dumps({ 'id': self.id }).decode('utf-8')
+        self.expired_at = datetime.utcnow()

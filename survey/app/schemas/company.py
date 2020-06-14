@@ -18,12 +18,15 @@ class CompanySchema(BaseSchema, UniqueIdMixin, TimestampMixin):
 
 
 
-class CompanyInvitationSchema(BaseSchema, UniqueIdMixin, TimestampMixin):
-    __model__ = models.CompanyInvitation
+class ManagerInvitationSchema(BaseSchema, UniqueIdMixin, TimestampMixin):
+    __model__ = models.ManagerInvitation
 
+    company = EscapedStr(max_length=200, required=True, validate=Length(max=200, min=1))
     email = EscapedStr(max_length=128, required=True, validate=Length(max=128, min=1))
     name = EscapedStr(max_length=200, required=True, validate=Length(max=200, min=1))
     subject = EscapedStr(max_length=128, required=True, validate=Length(min=1, max=500))
+
+    #company = ma.Nested(CompanySchema, only=( "id", ))
 
     token = EscapedStr(dump_only=True)
     expired_at = ma.DateTime(dump_only=True)

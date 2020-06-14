@@ -6,7 +6,10 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_mongoengine import MongoEngine
 from sentry_sdk.integrations.flask import FlaskIntegration
+from flask_mail import Mail
 
+
+mail = Mail()
 mongo = MongoEngine()
 ma = Marshmallow()
 jwt = JWTManager()
@@ -24,6 +27,7 @@ def create_app(config_name):
     ma.init_app(app)
     jwt.init_app(app)
     cors.init_app(app)
+    mail.init_app(app)
 
     sentry_sdk.init(
         dsn=config[config_name].SENTRY_CDN,
