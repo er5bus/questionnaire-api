@@ -17,8 +17,8 @@ class CompanySchema(BaseSchema, UniqueIdMixin, TimestampMixin):
     founded_year = EscapedStr(max_length=20, required=True)
 
 
-class CompanyInvitationSchema(BaseSchema, UniqueIdMixin, TimestampMixin):
-    __model__ = models.CompanyInvitation
+class ManagerInvitationSchema(BaseSchema, UniqueIdMixin, TimestampMixin):
+    __model__ = models.ManagerInvitation
 
     email = EscapedStr(max_length=128, required=True, validate=Length(max=128, min=1))
     name = EscapedStr(max_length=200, required=True, validate=Length(max=200, min=1))

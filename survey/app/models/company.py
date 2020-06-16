@@ -1,7 +1,26 @@
+from bson.objectid import ObjectId
 from .. import mongo
 from flask import current_app
 from datetime import datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+
+
+class ManagerInvitation(mongo.EmbeddedDocument):
+
+    id = mongo.ObjectIdField(primary_key=True, default=lambda: ObjectId() )
+    email = mongo.EmailField()
+    name = mongo.StringField()
+    subject = mongo.StringField()
+    token = mongo.StringField()
+    send_at = mongo.DateTimeField(default=datetime.utcnow)
+
+    def __init__(self, *args, **kwargs ) :
+        super().__init__(*args, **kwargs)
+        self.token = self.generate_token()
+
+    def generate_token(self):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        return s.dumps({ 'id': str(self.id) }).decode('utf-8')
 
 
 class Company(mongo.Document):
@@ -16,18 +35,4 @@ class Company(mongo.Document):
     founded_year = mongo.StringField()
 
     author = mongo.ReferenceField('survey.models.user.User')
-
-
-class CompanyInvitation(mongo.DynamicDocument):
-    email = mongo.EmailField()
-    name = mongo.StringField()
-    subject = mongo.StringField()
-    token = mongo.StringField(unique=True)
-    expired_at = mongo.DateTimeField(default=datetime.utcnow)
-
-    author = mongo.ReferenceField('survey.models.user.User')
-
-    def generate_token(self):
-        s = Serializer(current_app.config['SECRET_KEY'])
-        self.token = s.dumps({ 'email': self.email }).decode('utf-8')
-
+    manager_invitations = mongo.EmbeddedDocumentListField(ManagerInvitation, default=list)

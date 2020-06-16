@@ -10,16 +10,16 @@ class UpdateMixin(BaseMethodMixin):
     def update (self, *args, **kwargs):
         instance = self.get_object(**kwargs)
         instance_updated = self.deserialize(request.json, deepcopy(instance), partial=False)
-        self.perform_update(instance_updated)
+        self.perform_update(instance_updated, instance)
 
         return self.serialize(instance_updated), 200
 
     def partial_update (self, *args, **kwargs):
         instance = self.get_object(**kwargs)
         instance_updated = self.deserialize(request.json ,partial=True)
-        self.perform_update(instance)
+        self.perform_update(instance_updated, instance)
 
         return self.serialize(instance_updated), 200
 
-    def perform_update(self, instance):
+    def perform_update(self, instance, old_instance):
         instance.save()

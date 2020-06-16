@@ -1,7 +1,9 @@
 from flask import request, abort, jsonify
+from ..utils import camelcase
 from marshmallow.exceptions import ValidationError
 from flask_jwt_extended import jwt_required, get_current_user
 from collections import Iterable
+from bson.objectid import ObjectId
 
 
 class BaseMethodMixin:
@@ -26,20 +28,26 @@ class BaseMethodMixin:
 
     def filter_object(self, model_class=None, **kwargs):
         model_class = self.model_class if not model_class else model_class
+        try:
+            filter_kwargs = self.lookup_fields(**kwargs)
+            print(filter_kwargs)
+            return model_class.objects(**filter_kwargs).get()
+        except Exception:
+            return None
+        return None
+
+    def lookup_fields(self, **kwargs):
         if kwargs:
             filter_kwargs = dict()
             for lookup_field, value in kwargs.items():
-                filter_kwargs["{0}__exact".format(lookup_field)] = value
-            try:
-                return model_class.objects(**filter_kwargs).get()
-            except model_class.DoesNotExist:
-                return None
-        return None
+                filter_kwargs["{0}__exact".format(self.lookup_field_and_url_kwarg[lookup_field])] = value
+            return filter_kwargs
+        return {}
 
     def filter_objects(self, model_class=None, start=None, offset=None, **kwargs):
         objects = self.model_class.objects if not model_class else model_class.objects
         if kwargs:
-            filter_kwargs = dict()
+            filter_kwargs = self.lookup_fields(**kwargs)
             for lookup_field, value in kwargs.items():
                 filter_kwargs["{0}__exact".format(lookup_field)] = value
             return objects(**filter_kwargs)[start:offset]
@@ -49,10 +57,7 @@ class BaseMethodMixin:
         return self.filter_object(model_class=model_class, **kwargs)
 
     def get_object(self, model_class=None, **kwargs):
-        filter_kwargs = {}
-        for lookup_field, lookup_url_kwarg in self.lookup_field_and_url_kwarg.items():
-            filter_kwargs[lookup_field] = kwargs.get(lookup_url_kwarg, None)
-        instance = self.filter_object(model_class=model_class, **filter_kwargs)
+        instance = self.filter_object(model_class=model_class, **kwargs)
         if instance is None:
             abort(404)
         return instance
@@ -73,8 +78,11 @@ class BaseMethodMixin:
         errors = {}
         for unique_field in self.unique_fields:
             unique_object = self.filter_unique_object(**{ unique_field: getattr(instance, unique_field) })
-            if (unique_object and (not current_object or not hasattr(current_object, 'id'))) or (unique_object and hasattr(current_object, 'id') and current_object and str(unique_object.id) != str(current_object.id)):
-                errors[unique_field] = "This {} is already exist.".format(unique_object.__class__.__name__)
+            if (unique_object and (not current_object or not hasattr(current_object, 'id'))) \
+                or (unique_object and hasattr(current_object, 'id') and current_object and \
+                    ObjectId.is_valid(unique_object.id) and ObjectId.is_valid(current_object.id) and \
+                    str(unique_object.id) != str(current_object.id)):
+                errors[camelcase(unique_field)] = "This field is already exist."
         if errors:
             raise ValidationError(errors)
 

@@ -18,7 +18,26 @@ class CompanyListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, company):
         company.author = get_current_user()
-        company.save()
+        company.save( validate=False )
+
+
+class CompanyRetriveAllView(generics.RetrieveAPIView):
+
+    route_path = "/companies/all"
+    route_name = "companies_retrieve_all"
+
+    decorators = [ jwt_required ]
+
+    model_class = models.Company
+
+    def get_object(self, model_class=None, **kwargs):
+        return models.Company.objects.all()
+
+    def serialize(self, companies, many=False):
+        items = []
+        for company in companies:
+            items.append({"value": str(company.id), "label": company.name })
+        return { "items": items }
 
 
 class CompanyRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -34,4 +53,4 @@ class CompanyRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field_and_url_kwarg = {"id": "id"}
 
 
-utils.add_url_rule(api, CompanyListCreateView, CompanyRetrieveUpdateDestroyView)
+utils.add_url_rule(api, CompanyListCreateView, CompanyRetriveAllView, CompanyRetrieveUpdateDestroyView)

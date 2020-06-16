@@ -1,4 +1,5 @@
 from .. import ma
+from ..views import utils
 from flask import escape
 from marshmallow import pre_load, post_load, post_dump
 from collections import Iterable
@@ -25,11 +26,7 @@ class BaseSchema(ma.Schema):
     __model__ = None
 
     def on_bind_field(self, field_name, field_obj):
-        field_obj.data_key = self.camelcase(field_obj.data_key or field_name)
-
-    def camelcase(self, s):
-        parts = iter(s.split("_"))
-        return next(parts) + "".join(i.title() for i in parts)
+        field_obj.data_key = utils.camelcase(field_obj.data_key or field_name)
 
     @post_load()
     def deserialize(self, data = dict(), **kwargs):

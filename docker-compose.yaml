@@ -2,14 +2,15 @@ version: '2'
 
 services:
   survey:
-    image: predictanalyse/survey-back:latest
+    build: 
+      context: .
     restart: on-failure:5
     volumes:
       - ./survey:/survey
     env_file:
       - ./.flaskenv
     ports:
-      - 8080:5000
+      - 4000:5000
     depends_on:
       - mongo_database
     links:

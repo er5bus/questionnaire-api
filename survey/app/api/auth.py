@@ -35,12 +35,11 @@ def user_loader_callback_loader(jwt_identity):
 
 class UserRegisterView(generics.CreateAPIView, generics.OptionsAPIView):
 
-    route_path = "/auth/register"
+    route_path = "/auth/register/<string:token>"
     route_name = "user_register"
 
     model_class = models.User
     schema_class = schemas.UserSchema
-    unique_fields = ("email", )
 
     access_token = None
 

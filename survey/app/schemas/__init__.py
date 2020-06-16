@@ -1,2 +1,2 @@
 from .user import UserSchema
-from .company import CompanyInvitationSchema, CompanySchema
+from .company import ManagerInvitationSchema, CompanySchema
