@@ -6,7 +6,7 @@ from bson.objectid import ObjectId
 
 class Role:
     ADMIN = 1
-    MODERATE = 2
+    MODERATOR = 2
     EMPLOYEE = 4
 
 
@@ -20,7 +20,7 @@ class User(mongo.DynamicDocument, TimestampMixin):
     hashed_password = mongo.StringField()
     confirmed = mongo.BooleanField(default=False)
     deleted_at = mongo.DateTimeField(default=None)
-    roles = mongo.ListField()
+    role = mongo.IntField()
 
     @property
     def password(self):
@@ -33,30 +33,21 @@ class User(mongo.DynamicDocument, TimestampMixin):
     def check_password(self, password):
         return check_password_hash(self.hashed_password, password)
 
-    def can(self, perm):
-        for role in self.roles:
-            if role.has_role(perm):
-                return True
-        return False
-
     def is_administrator(self):
         return self.can(Permission.ADMIN)
 
-    def ping(self):
-        self.last_seen = datetime.utcnow()
-
     def add_role(self, perm):
         if not self.has_role(perm):
-            self.roles += perm
+            self.role += perm
 
     def remove_role(self, perm):
         if self.has_role(perm):
-            self.roles -= perm
+            self.role -= perm
 
     def reset_role(self):
-        if self.roles != 0:
-            self.roles = 0
+        if self.role != 0:
+            self.role = 0
 
     def has_role(self, perm):
-        return self.roles & perm == perm
+        return self.role & perm == perm
 
