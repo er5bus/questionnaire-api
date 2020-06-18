@@ -5,6 +5,7 @@ from mongoengine.queryset.visitor import Q
 from flask import request, abort, current_app
 from bson.objectid import ObjectId
 from flask_jwt_extended import create_access_token, get_jwt_identity, get_raw_jwt, get_jti, jwt_required
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadData
 
 
 @api.before_app_first_request
@@ -15,7 +16,7 @@ def before_first_request_func():
         root = models.User()
         root.username = current_app.config['ROOT_USERNAME']
         root.password = current_app.config['ROOT_PASSWORD']
-        root.roles = [ models.Role.ADMIN ]
+        root.role = models.Role.ADMIN
         root.save()
 
 
@@ -33,6 +34,34 @@ def user_loader_callback_loader(jwt_identity):
     return None
 
 
+class InvitationView(generics.RetrieveAPIView):
+    route_path = "/auth/invitation/<string:token>"
+    route_name = "invitation"
+
+    model_class = models.ManagerInvitation
+
+    lookup_field_and_url_kwarg = {"token": "token"}
+
+    def extract_token(self, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token.encode('utf8'))
+        except BadData:
+            abort(404)
+        else:
+            return data
+
+    def filter_object(self, model_class=None, **kwargs):
+        data = self.extract_token(kwargs.get("token"))
+        if data.get('invitation') == 'manager':
+            self.schema_class = schemas.ManagerInvitationSchema
+            company = models.Company.objects(id__exact=data.get("company_id", None)).first_or_404()
+            invitation = company.manager_invitations.filter(id=data.get("id", None)).first()
+            if invitation and not invitation.authenticated:
+                return invitation
+        return None
+
+
 class UserRegisterView(generics.CreateAPIView, generics.OptionsAPIView):
 
     route_path = "/auth/register/<string:token>"
@@ -41,15 +70,33 @@ class UserRegisterView(generics.CreateAPIView, generics.OptionsAPIView):
     model_class = models.User
     schema_class = schemas.UserSchema
 
+    unique_fields = ('email', 'username')
+
     access_token = None
 
+    def extract_token(self, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token.encode('utf8'))
+        except BadData:
+            abort(404)
+        else:
+            return data
+
     def create (self, *args, **kwargs):
+        self.data = self.extract_token(kwargs.get("token"))
         (response, code) = super().create(self, *args, **kwargs)
         return {**response, "access_token": self.access_token }, code
 
     def perform_create(self, instance):
-        super().perform_create(instance)
-        self.access_token = create_access_token(identity=instance.id)
+        if self.data.get('invitation', None) == 'manager':
+            instance.role = models.Role.MODERATOR
+            super().perform_create(instance)
+            models.Company.objects(manager_invitations__id__exact=self.data.get('id', None)).update_one(
+                set__manager_invitations__S__authenticated=True,
+                set__manager_invitations__S__user=instance,
+            )
+        self.access_token = create_access_token(identity=str(instance.id))
 
 
 class UserLoginView(generics.CreateAPIView, generics.OptionsAPIView):
@@ -82,4 +129,4 @@ class UserLogoutView(generics.CreateAPIView):
         return {"message": "Successfully logged out"}, 200
 
 
-utils.add_url_rule(api, UserRegisterView, UserLoginView, UserLogoutView)
+utils.add_url_rule(api, UserRegisterView, InvitationView, UserLoginView, UserLogoutView)

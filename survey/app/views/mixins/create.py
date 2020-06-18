@@ -8,8 +8,8 @@ class CreateMixin(BaseMethodMixin):
     """
     def create (self, *args, **kwargs):
         instance = self.deserialize(request.json)
-        self.perform_create(instance, **kwargs)
+        self.perform_create(instance)
         return self.serialize(instance), 201
 
-    def perform_create(self, instance, **kwargs):
+    def perform_create(self, instance):
         instance.save()
