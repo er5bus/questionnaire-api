@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:3.7
 
 LABEL MAINTAINER="Rami sfari <rami2sfari@gmail.com>"
 
@@ -6,10 +6,6 @@ COPY ./entrypoint.sh ./requirements.txt /
 
 # Install Dependencies
 RUN ["pip", "install", "-r", "/requirements.txt"]
-
-# Create New user & group
-RUN groupadd -r uswgi && useradd -r -g uswgi uswgi
-USER uswgi
 
 # Copy files
 COPY ./survey /survey

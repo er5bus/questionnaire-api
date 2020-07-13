@@ -10,9 +10,14 @@ from datetime import datetime
 
 class ManagerInvitationSendMailView(generics.CreateAPIView):
 
-    message_html = """<h1>Hello {}!<h1>
-<h3>{}</h3>
+    message_html = """<h1>Hello {}!</h1>
+
 <a href={}>Here is your login link</a>
+<br/>
+
+<p>{}</p>
+<br />
+<p> If Login link does not work {}</p>
 <br/>
 <p>Best Regards,</p>
 <p>The Team.</p>
@@ -39,8 +44,9 @@ class ManagerInvitationSendMailView(generics.CreateAPIView):
         message = Message(subject="Create Password", sender=current_app.config['FLASK_MAIL_SENDER'], recipients=[invitation.email])
         message.html = self.message_html.format(
             invitation.full_name,
+            str(current_app.config['REGISTER_LINK']).format(invitation.token),
             invitation.subject,
-            str(current_app.config['REGISTER_LINK']).format(invitation.token)
+            str(current_app.config['REGISTER_LINK']).format(invitation.token),
         )
         mail.send(message=message)
 
@@ -105,7 +111,7 @@ class ManagerInvitationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyA
     def perform_delete(self, manager_invitation):
         manager_invitation.user.delete()
         models.Company.objects(manager_invitations__id__exact=manager_invitation.id).update_one(
-            set__manager_invitations=[invitation for invitation in self.company.manager_invitations if not invitation.id == manager_invitation.id] 
+            set__manager_invitations=[invitation for invitation in self.company.manager_invitations if not invitation.id == manager_invitation.id]
         )
 
 
