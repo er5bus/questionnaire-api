@@ -1,22 +1,24 @@
-version: '2'
+version: '3'
 
 services:
   survey_back:
-    container_name: survey_back
-    image: predictanalyse/survey-back:latest
+    build: 
+      context: .
     restart: on-failure:5
+    volumes:
+      - ./survey:/survey
     env_file:
-      - ./.env
+      - ./.flaskenv
+    networks:
+      - traefik
     depends_on:
       - mongo_database
     links:
       - "mongo_database:mongo_db"
-    networks:
-      - traefik
     labels:
       - traefik.enable=true
-      - traefik.http.routers.survey_deploy.rule=Host(`back.questionnaire-a.tk`)
-      - traefik.http.services.survey.loadbalancer.server.port=5000
+      - traefik.http.routers.survey_back.rule=Host(`back.questionnaire-a.tk`)
+      - traefik.http.services.survey_back_service.loadbalancer.server.port=5000
 
   mongo_database:
     image: mongo:4.2
@@ -24,12 +26,13 @@ services:
       - 27017:27017
     env_file: mongo.conf
     restart: on-failure:5
+    command: mongod --auth
     networks:
       - traefik
-    command: mongod --auth
     volumes:
       - ./data:/db
 
 networks:
   traefik:
     external: true
+
