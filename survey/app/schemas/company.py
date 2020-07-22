@@ -27,5 +27,5 @@ class ManagerInvitationSchema(BaseSchema, UniqueIdMixin, TimestampMixin):
     token = EscapedStr(dump_only=True)
     send_at = ma.DateTime(dump_only=True)
 
-    authenticated = ma.Boolean(dump_only=True)
+    is_created = ma.Boolean(dump_only=True)
 

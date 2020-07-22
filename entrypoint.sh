@@ -12,7 +12,7 @@ elif [ $FLASK_CONFIG = 'testing' ]; then
   exec flask tests
 elif [ $FLASK_CONFIG = 'production' ]; then
   echo -e "Starting production server\n************\n"
-  exec uwsgi --ini /survey/uwsgi.ini
+  exec uwsgi --ini /app/uwsgi.ini
 else
   echo -e "Invalid config $FLASK_CONFIG"
 fi

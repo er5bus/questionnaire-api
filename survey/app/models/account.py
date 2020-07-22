@@ -1,8 +1,10 @@
 from .. import mongo
+from .common import BaseUser
+from .employee import Employee
 from ._behaviors import TimestampMixin
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from bson.objectid import ObjectId
+
 
 class Role:
     ADMIN = 1
@@ -10,7 +12,7 @@ class Role:
     EMPLOYEE = 4
 
 
-class User(mongo.DynamicDocument, TimestampMixin):
+class Account(mongo.DynamicDocument, TimestampMixin):
     username = mongo.StringField(unique=True)
     email = mongo.StringField(unique=True)
     enabled = mongo.BooleanField()
@@ -21,6 +23,8 @@ class User(mongo.DynamicDocument, TimestampMixin):
     confirmed = mongo.BooleanField(default=False)
     deleted_at = mongo.DateTimeField(default=None)
     role = mongo.IntField()
+
+    company = mongo.ReferenceField('app.models.company.Company', default=None)
 
     @property
     def password(self):

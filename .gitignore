@@ -152,7 +152,7 @@ venv.bak/
 
 # mkdocs documentation
 /site
-/neo4j
+/data
 
 # mypy
 .mypy_cache/
@@ -169,3 +169,4 @@ dmypy.json
 # pipfile
 Pipfile
 Pipfile.*
+

@@ -30,7 +30,6 @@ class BaseMethodMixin:
         model_class = self.model_class if not model_class else model_class
         try:
             filter_kwargs = self.lookup_fields(**kwargs)
-            print(filter_kwargs)
             return model_class.objects(**filter_kwargs).get()
         except Exception:
             return None
@@ -54,7 +53,12 @@ class BaseMethodMixin:
         return objects[start:offset]
 
     def filter_unique_object(self, model_class=None, **kwargs):
-        return self.filter_object(model_class=model_class, **kwargs)
+        model_class = self.model_class if not model_class else model_class
+        try:
+            return model_class.objects(**kwargs).get()
+        except Exception as e:
+            print(e)
+            return None
 
     def get_object(self, model_class=None, **kwargs):
         instance = self.filter_object(model_class=model_class, **kwargs)
@@ -77,7 +81,9 @@ class BaseMethodMixin:
     def validate_unique(self, instance, current_object = None):
         errors = {}
         for unique_field in self.unique_fields:
-            unique_object = self.filter_unique_object(**{ unique_field: getattr(instance, unique_field) })
+            unique_field_value = getattr(instance, unique_field)
+            unique_object = self.filter_unique_object(**{ unique_field: str(unique_field_value) if isinstance(unique_field_value, str) else unique_field_value })
+            print(unique_object)
             if (unique_object and (not current_object or not hasattr(current_object, 'id'))) \
                 or (unique_object and hasattr(current_object, 'id') and current_object and \
                     ObjectId.is_valid(unique_object.id) and ObjectId.is_valid(current_object.id) and \

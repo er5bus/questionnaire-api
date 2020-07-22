@@ -8,8 +8,8 @@ COPY ./entrypoint.sh ./requirements.txt /
 RUN ["pip", "install", "-r", "/requirements.txt"]
 
 # Copy files
-COPY ./survey /survey
-WORKDIR /survey
+COPY ./survey /app
+WORKDIR /app
 
 EXPOSE 5000 9191
 

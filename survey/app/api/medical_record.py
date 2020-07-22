@@ -43,6 +43,7 @@ class EmployeeListCreateView(generics.ListCreateAPIView):
 
 
 class EmployeeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+
     route_path = "/employee/<string:id>"
     route_name = "employee_retrieve_update_destroy"
 

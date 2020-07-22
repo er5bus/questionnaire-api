@@ -11,9 +11,9 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadData
 @api.before_app_first_request
 def before_first_request_func():
     try:
-        root = models.User.objects.get(username__exact=current_app.config['ROOT_USERNAME'])
-    except models.User.DoesNotExist:
-        root = models.User()
+        root = models.Account.objects.get(username__exact=current_app.config['ROOT_USERNAME'])
+    except models.Account.DoesNotExist:
+        root = models.Account()
         root.username = current_app.config['ROOT_USERNAME']
         root.password = current_app.config['ROOT_PASSWORD']
         root.role = models.Role.ADMIN
@@ -30,7 +30,7 @@ def check_if_token_in_blacklist(decrypted_token):
 @jwt.user_loader_callback_loader
 def user_loader_callback_loader(jwt_identity):
     if ObjectId.is_valid(jwt_identity):
-        return models.User.objects(id=jwt_identity).first_or_404()
+        return models.Account.objects(id=jwt_identity).first_or_404()
     return None
 
 
@@ -57,18 +57,18 @@ class InvitationView(generics.RetrieveAPIView):
             self.schema_class = schemas.ManagerInvitationSchema
             company = models.Company.objects(id__exact=data.get("company_id", None)).first_or_404()
             invitation = company.manager_invitations.filter(id=data.get("id", None)).first()
-            if invitation and not invitation.authenticated:
+            if invitation and not invitation.is_created:
                 return invitation
         return None
 
 
-class UserRegisterView(generics.CreateAPIView, generics.OptionsAPIView):
+class AccountRegisterView(generics.CreateAPIView, generics.OptionsAPIView):
 
     route_path = "/auth/register/<string:token>"
     route_name = "user_register"
 
-    model_class = models.User
-    schema_class = schemas.UserSchema
+    model_class = models.Account
+    schema_class = schemas.AccountSchema
 
     unique_fields = ('email', 'username')
 
@@ -88,18 +88,20 @@ class UserRegisterView(generics.CreateAPIView, generics.OptionsAPIView):
         (response, code) = super().create(self, *args, **kwargs)
         return {**response, "access_token": self.access_token }, code
 
-    def perform_create(self, instance):
-        if self.data.get('invitation', None) == 'manager':
-            instance.role = models.Role.MODERATOR
-            super().perform_create(instance)
+    def perform_create(self, user):
+        company = models.Company.objects(id__exact=self.data.get("company_id", None)).first_or_404()
+        if company and self.data.get('invitation', None) == 'manager':
+            user.role = models.Role.MODERATOR
+            user.company = company
+            super().perform_create(user)
             models.Company.objects(manager_invitations__id__exact=self.data.get('id', None)).update_one(
-                set__manager_invitations__S__authenticated=True,
-                set__manager_invitations__S__user=instance,
+                set__manager_invitations__S__is_created=True,
+                set__manager_invitations__S__account=user,
             )
-        self.access_token = create_access_token(identity=str(instance.id))
+        self.access_token = create_access_token(identity=str(user.id))
 
 
-class UserLoginView(generics.CreateAPIView, generics.OptionsAPIView):
+class AccountLoginView(generics.CreateAPIView, generics.OptionsAPIView):
     route_path = "/auth/login"
     route_name = "user_login"
 
@@ -107,16 +109,16 @@ class UserLoginView(generics.CreateAPIView, generics.OptionsAPIView):
         username_or_email = request.json.get("username_or_email", None)
         password = request.json.get("password", None)
         try:
-            current_user = models.User.objects.get(Q(email__exact=username_or_email) | Q(username__exact=username_or_email)) if password or email else None
+            current_user = models.Account.objects.get(Q(email__exact=username_or_email) | Q(username__exact=username_or_email)) if password or email else None
             if current_user and current_user.check_password(password):
-                data = schemas.UserSchema(many=False).dump(current_user)
+                data = schemas.AccountSchema(many=False).dump(current_user)
                 return {**data ,"access_token": create_access_token(identity=str(current_user.id))}, 200
-        except models.User.DoesNotExist:
+        except models.Account.DoesNotExist:
             pass
         return abort(400, {"Oops": "Invalid email or password."})
 
 
-class UserLogoutView(generics.CreateAPIView):
+class AccountLogoutView(generics.CreateAPIView):
 
     route_path = "/auth/logout"
     route_name = "user_logout"
@@ -129,4 +131,4 @@ class UserLogoutView(generics.CreateAPIView):
         return {"message": "Successfully logged out"}, 200
 
 
-utils.add_url_rule(api, UserRegisterView, InvitationView, UserLoginView, UserLogoutView)
+utils.add_url_rule(api, AccountRegisterView, InvitationView, AccountLoginView, AccountLogoutView)
