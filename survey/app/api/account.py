@@ -10,8 +10,8 @@ class AccountListCreateView(generics.ListCreateAPIView):
     route_path = "/users"
     route_name = "user_list_create"
 
-    model_class = models.Account
-    schema_class = schemas.AccountSchema
+    model_class = models.BaseUser
+    schema_class = schemas.BaseUserSchema
     unique_fields = ("email", "username" )
 
     decorators = [ jwt_required ]
@@ -25,8 +25,8 @@ class AccountRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     route_path = "/user/<string:id>"
     route_name = "user_retrieve_update_destroy"
 
-    model_class = models.Account
-    schema_class = schemas.AccountSchema
+    model_class = models.BaseUser
+    schema_class = schemas.BaseUserSchema
     unique_fields = ("email", "username" )
 
     decorators = [ jwt_required ]

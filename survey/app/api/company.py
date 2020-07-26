@@ -17,8 +17,8 @@ class CompanyListCreateView(generics.ListCreateAPIView):
     decorators = [ jwt_required ]
 
     def perform_create(self, company):
-        company.author = get_current_user()
-        company.save( validate=False )
+        #company.author = get_current_user()
+        super().perform_create(company)
 
 
 class CompanyRetriveAllView(generics.RetrieveAPIView):
@@ -50,7 +50,7 @@ class CompanyRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     decorators = [ jwt_required ]
 
-    lookup_field_and_url_kwarg = {"id": "id"}
+    lookup_field_and_url_kwarg = {"id": "pk"}
 
 
 utils.add_url_rule(api, CompanyListCreateView, CompanyRetriveAllView, CompanyRetrieveUpdateDestroyView)

@@ -1,21 +1,48 @@
-from .. import mongo
+from .. import db
+from sqlalchemy.ext.declarative import declared_attr
+from ._behaviors import Base, AccountMixin, TimestampMixin
 from datetime import datetime
-from ._behaviors import TimestampMixin, IdMixin
 
 
-class BaseInvitation(TimestampMixin):
+class BaseInvitation(Base, TimestampMixin):
 
-    email = mongo.EmailField()
-    full_name = mongo.StringField()
-    subject = mongo.StringField()
-    token = mongo.StringField()
-    send_at = mongo.DateTimeField(default=None)
-    is_created = mongo.BooleanField( default=False )
+    discriminator = db.Column('type', db.String(50))
+    __mapper_args__ = { 'polymorphic_identity': 'baseinvitation', 'polymorphic_on': discriminator }
+
+    email = db.Column(db.String(128), unique=True)
+    full_name = db.Column(db.String(200))
+    subject = db.Column(db.String(128))
+    token = db.Column(db.Text)
+    send_at = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
+    is_created = db.Column(db.Boolean, default=True)
+
+    company_pk = db.Column(db.Integer, db.ForeignKey('company.pk'))
+    company = db.relationship('app.models.company.Company', backref=db.backref("invitations", lazy="joined"), foreign_keys=[company_pk])
+
+    account = db.relationship('app.models.common.BaseUser', back_populates='invitation')
 
 
-class BaseUser(TimestampMixin):
+class BaseUser(Base, AccountMixin, TimestampMixin):
 
-    first_name = mongo.StringField()
-    last_name = mongo.StringField()
-    member_since = mongo.DateTimeField(default=datetime.utcnow)
-    last_seen = mongo.DateTimeField(default=datetime.utcnow)
+    discriminator = db.Column('type', db.String(50))
+    __mapper_args__ = { 'polymorphic_identity': 'baseuser', 'polymorphic_on': discriminator }
+
+    first_name = db.Column(db.String(128))
+    last_name = db.Column(db.String(128))
+
+    enabled = db.Column(db.Boolean, default=True)
+    member_since = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
+    deleted_at = db.Column(db.DateTime, nullable=True)
+
+    invitation_pk = db.Column(db.Integer, db.ForeignKey('baseinvitation.pk'))
+    invitation = db.relationship(BaseInvitation, back_populates='account')
+
+    company_pk = db.Column(db.Integer, db.ForeignKey('company.pk'))
+    company = db.relationship('app.models.company.Company', backref=db.backref("employees", lazy="joined"), foreign_keys=[company_pk])
+
+
+class Role:
+    ADMIN = 1
+    MODERATOR = 2
+    EMPLOYEE = 4

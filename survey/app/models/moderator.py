@@ -1,33 +1,22 @@
-from .. import mongo
-from ._behaviors import TimestampMixin, IdMixin
+from .. import db
+from ._behaviors import Base
 from .common import BaseInvitation, BaseUser
-from bson.objectid import ObjectId
 from flask import current_app
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadData
 
 
-class Moderator(BaseUser, mongo.EmbeddedDocument):
+class Manager(BaseUser):
 
-    id = mongo.ObjectIdField(primary_key=True, default=lambda: ObjectId() )
+    __mapper_args__ = {'polymorphic_identity':'manager'}
 
-    birthday = mongo.DateTimeField()
-    phone = mongo.StringField()
-
-    account = mongo.ReferenceField('app.models.account.Account')
+    #phone = db.Column(db.String(20))
 
 
-class ManagerInvitation(BaseInvitation, mongo.EmbeddedDocument):
 
-    id = mongo.ObjectIdField(primary_key=True, default=lambda: ObjectId() )
-    email = mongo.EmailField()
-    full_name = mongo.StringField()
-    subject = mongo.StringField()
-    token = mongo.StringField()
-    send_at = mongo.DateTimeField(default=None)
-    is_created = mongo.BooleanField( default=False )
+class ManagerInvitation(BaseInvitation):
 
-    account = mongo.ReferenceField("app.models.account.Account", default=None)
+    __mapper_args__ = {'polymorphic_identity':'managerinvitation'}
 
-    def generate_token(self, company_id):
+    def generate_token(self):
         s = Serializer(current_app.config['SECRET_KEY'])
-        return s.dumps({ 'id': str(self.id), 'company_id': company_id, 'invitation': 'manager' }).decode('utf-8')
+        return s.dumps({ 'pk': str(self.pk), 'company_pk': self.company_pk, 'invitation': self.__class__.__name__ }).decode('utf-8')

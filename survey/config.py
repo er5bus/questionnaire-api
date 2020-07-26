@@ -24,10 +24,8 @@ class Config:
     JWT_PRIVATE_KEY = os.getenv("JWT_PRIVATE_KEY", "hard to guess string")
     JWT_ERROR_MESSAGE_KEY = 'message'
 
-    MONGODB_SETTINGS = {
-        'host': os.getenv('DATABASE_URL', '<replace it with a database url>'),
-        'connect': False
-    }
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', '<replace it with a database url>')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     SENTRY_CDN = os.getenv('SENTRY_CDN', '<replace it with a database url>')
 
     ROOT_USERNAME = os.getenv("ROOT_USERNAME", "hard to guess string")

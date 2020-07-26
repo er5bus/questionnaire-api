@@ -6,7 +6,7 @@ services:
       context: .
     restart: on-failure:5
     volumes:
-      - ./survey:/survey
+      - ./survey:/app
     env_file:
       - ./.flaskenv
     networks:
@@ -17,7 +17,7 @@ services:
       - "mongo_database:mongo_db"
     labels:
       - traefik.enable=true
-      - traefik.http.tls=true
+      - traefik.http.tls=${TLS}
       - traefik.http.routers.survey_back.rule=Host(${DOMAINE_NAME})
       - traefik.http.services.survey_back_service.loadbalancer.server.port=5000
 

@@ -1,9 +1,12 @@
 Flask==1.1.1
 Flask-JWT-Extended==3.22.0
+Flask-SQLAlchemy==2.4.1
 flask-marshmallow==0.10.1
-flask-mongoengine==0.9.5
+marshmallow-sqlalchemy==0.23.1
+psycopg2==2.8.5
+psycopg2-binary==2.8.5
+Flask-Migrate==2.5.2
 Flask-Mail==0.9.1
-psycopg2==2.8.4
 Flask-Cors==3.0.8
 uwsgi==2.0.18
 sentry-sdk==0.10.2

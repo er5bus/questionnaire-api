@@ -10,7 +10,7 @@ class EmployeeListCreateView(generics.ListCreateAPIView):
     route_path = "/company/<string:company_id>/employees"
     route_name = "employee_list_create"
 
-    model_class = models.Account
+    model_class = models.Employee
     schema_class = schemas.EmployeeSchema
 
     unique_fields = ("email", "username")
@@ -33,7 +33,6 @@ class EmployeeListCreateView(generics.ListCreateAPIView):
         employee_account.email = employee.email
         employee_account.password = employee.password
         employee_account.role = models.Role.EMPLOYEE
-        employee_account.company = self.company
         #employee_account.user = employee
         employee_account.save()
 
@@ -47,8 +46,8 @@ class EmployeeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     route_path = "/employee/<string:id>"
     route_name = "employee_retrieve_update_destroy"
 
-    model_class = models.Account
-    schema_class = schemas.AccountSchema
+    model_class = models.Employee
+    schema_class = schemas.EmployeeSchema
     unique_fields = ("email", "employeename" )
 
     decorators = [ jwt_required ]
