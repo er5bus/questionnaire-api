@@ -17,7 +17,7 @@ services:
       - "db:db"
     labels:
       - traefik.enable=true
-      - traefik.http.tls=true
+      - traefik.http.routers.survey_back.tls=${TLS}
       - traefik.http.routers.survey_back.rule=Host("${SITE_DOMAINE_NAME}")
       - traefik.http.services.survey_back_service.loadbalancer.server.port=5000
 
@@ -41,6 +41,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.tls=true
+      - traefik.http.routers.adminer.tls=${TLS}
       - traefik.http.routers.adminer.rule=Host("${ADMINER_DOMAINE_NAME}")
       - traefik.http.services.adminer_service.loadbalancer.server.port=8080
 
