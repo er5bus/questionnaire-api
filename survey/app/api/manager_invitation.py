@@ -77,7 +77,7 @@ class ManagerInvitationListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, manager_invitation):
         manager_invitation.company = self.company
-        invitation.token = uuid.uuid4()
+        manager_invitation.token = uuid.uuid4()
         super().perform_create(manager_invitation)
         ManagerInvitationSendMailView.send_email(manager_invitation)
 
