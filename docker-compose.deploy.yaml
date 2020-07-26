@@ -1,37 +1,48 @@
 version: '3'
 
 services:
-  survey_back:
-    build: 
+  survey_deploy:
+    build:
       context: .
     restart: on-failure:5
     volumes:
-      - ./survey:/app
+      - ./survey:/survey
     env_file:
-      - ./.flaskenv
+      - ./.env
     networks:
       - traefik
     depends_on:
-      - mongo_database
+      - db
     links:
-      - "mongo_database:mongo_db"
+      - "db:db"
     labels:
       - traefik.enable=true
-      - traefik.http.tls=${TLS}
-      - traefik.http.routers.survey_back.rule=Host(${DOMAINE_NAME})
+      - traefik.http.tls=true
+      - traefik.http.routers.survey_back.rule=Host("${SITE_DOMAINE_NAME}")
       - traefik.http.services.survey_back_service.loadbalancer.server.port=5000
 
-  mongo_database:
-    image: mongo:4.2
-    ports:
-      - 27017:27017
-    env_file: mongo.conf
+  db:
+    image: postgres:9.6
     restart: on-failure:5
-    command: mongod --auth
     networks:
       - traefik
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - ./data:/db
+      - ./db:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    restart: on-failure:5
+    networks:
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.http.tls=true
+      - traefik.http.routers.adminer.rule=Host("${ADMINER_DOMAINE_NAME}")
+      - traefik.http.services.adminer_service.loadbalancer.server.port=8080
 
 networks:
   traefik:
