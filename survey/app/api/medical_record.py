@@ -15,16 +15,17 @@ class MedicalRecordCreateRetrieveView(generics.CreateRetrieveAPIView):
 
     decorators = [ jwt_required ]
 
-    def get_object():
+    def get_object(self, **kwargs):
         current_user = get_current_user()
-        if not hasattr(current_user, medical_record):
+        if not hasattr(current_user, "medical_record"):
             abort(401)
         return current_user.medical_record
 
     def perform_create(self, medical_record):
+        super().perform_create(medical_record)
         current_user = get_current_user()
         current_user.medical_record = medical_record
-        super().perform_create(medical_record)
+        super().perform_create(current_user)
 
 
 utils.add_url_rule(api, MedicalRecordCreateRetrieveView)

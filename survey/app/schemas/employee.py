@@ -10,11 +10,6 @@ class MedicalRecordSchema(BaseSchema):
 
     id = ma.Int(attribute='pk', dump_only=True)
 
-    height = EscapedStr(max_length=150, required=True, validate=Length(max=200, min=1))
-    weight = EscapedStr(max_length=150, required=True, validate=Length(max=128, min=1))
-    medical_history = EscapedStr(max_length=128, required=True, validate=Length(max=128, min=1))
-    chronic_illness = EscapedStr(max_length=128, required=True, validate=Length(max=128, min=1))
-
 
 class EmployeeInvitationSchema(BaseSchema):
     class Meta:

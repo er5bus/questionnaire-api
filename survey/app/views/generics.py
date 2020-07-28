@@ -94,7 +94,7 @@ class ListCreateAPIView(mixins.ListMixin, mixins.CreateMixin, mixins.OptionsMixi
         return self.cors_preflight(*args, **kwargs)
 
 
-class CreateRetrieveAPIView(mixins.ListMixin, mixins.CreateMixin, mixins.OptionsMixin, MethodView):
+class CreateRetrieveAPIView(mixins.RetrieveMixin, mixins.CreateMixin, mixins.OptionsMixin, MethodView):
     """
     Concrete view for listing a nodes or creating a node.
     """
