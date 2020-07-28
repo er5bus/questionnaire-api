@@ -94,6 +94,22 @@ class ListCreateAPIView(mixins.ListMixin, mixins.CreateMixin, mixins.OptionsMixi
         return self.cors_preflight(*args, **kwargs)
 
 
+class CreateRetrieveAPIView(mixins.ListMixin, mixins.CreateMixin, mixins.OptionsMixin, MethodView):
+    """
+    Concrete view for listing a nodes or creating a node.
+    """
+    methods = {'GET', 'POST', 'OPTIONS'}
+
+    def get(self, *args, **kwargs):
+        return self.retrieve(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        return self.create(*args, **kwargs)
+
+    def options(self, *args, **kwargs):
+        return self.cors_preflight(*args, **kwargs)
+
+
 class RetrieveUpdateAPIView(mixins.RetrieveMixin, mixins.UpdateMixin, mixins.OptionsMixin, MethodView):
     """
     Concrete view for retrieving, updating a node.

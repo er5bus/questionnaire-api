@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 98399a8190a7
+Revision ID: 64068cbe6c5d
 Revises: 
-Create Date: 2020-07-26 11:58:52.443478
+Create Date: 2020-07-28 17:55:57.621526
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '98399a8190a7'
+revision = '64068cbe6c5d'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -57,6 +57,10 @@ def upgrade():
     )
     op.create_table('baseuser',
     sa.Column('type', sa.String(length=50), nullable=True),
+    sa.Column('hashed_password', sa.String(length=128), nullable=True),
+    sa.Column('email', sa.String(length=128), nullable=True),
+    sa.Column('username', sa.String(length=128), nullable=True),
+    sa.Column('role', sa.Integer(), nullable=True),
     sa.Column('first_name', sa.String(length=128), nullable=True),
     sa.Column('last_name', sa.String(length=128), nullable=True),
     sa.Column('enabled', sa.Boolean(), nullable=True),
@@ -66,10 +70,6 @@ def upgrade():
     sa.Column('invitation_pk', sa.Integer(), nullable=True),
     sa.Column('company_pk', sa.Integer(), nullable=True),
     sa.Column('pk', sa.Integer(), nullable=False),
-    sa.Column('_AccountMixin__hashed_password', sa.String(length=128), nullable=True),
-    sa.Column('email', sa.String(length=128), nullable=True),
-    sa.Column('username', sa.String(length=128), nullable=True),
-    sa.Column('role', sa.Integer(), nullable=True),
     sa.Column('created', sa.DateTime(), nullable=True),
     sa.Column('updated', sa.DateTime(), nullable=True),
     sa.Column('birthday', sa.DateTime(), nullable=True),

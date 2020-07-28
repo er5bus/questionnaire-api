@@ -79,7 +79,13 @@ class BaseUserLoginView(generics.CreateAPIView, generics.OptionsAPIView):
         password = request.json.get("password", None)
         current_user = models.BaseUser.query.filter(or_(models.BaseUser.email==username_or_email, models.BaseUser.username==username_or_email)).one_or_none()
         if current_user and current_user.check_password(password):
-            data = schemas.BaseUserSchema(many=False).dump(current_user)
+            if isinstance(current_user, models.Manager):
+                data = schemas.ManagerSchema(many=False).dump(current_user)
+            elif isinstance(current_user, models.Employee):
+                data = schemas.EmployeeSchema(many=False).dump(current_user)
+            else:
+                data = schemas.BaseUserSchema(many=False).dump(current_user)
+            print(data)
             return {**data ,"access_token": create_access_token(identity=str(current_user.pk))}, 200
         return abort(400, {"Oops": "Invalid email or password."})
 

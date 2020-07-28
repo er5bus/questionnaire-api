@@ -1,58 +1,30 @@
 from . import api
 from .. import models, schemas
 from ..views import utils, generics
-from flask import current_app
-from flask_jwt_extended import jwt_required
+from flask import abort
+from flask_jwt_extended import jwt_required, get_current_user
 
 
-class EmployeeListCreateView(generics.ListCreateAPIView):
+class MedicalRecordCreateRetrieveView(generics.CreateRetrieveAPIView):
 
-    route_path = "/company/<string:company_id>/employees"
-    route_name = "employee_list_create"
+    route_path = "/medical-record"
+    route_name = "create-medical-record"
 
-    model_class = models.Employee
-    schema_class = schemas.EmployeeSchema
-
-    unique_fields = ("email", "username")
-
-    lookup_field_and_url_kwarg = {"company_id": "id"}
+    model_class = models.MedicalRecord
+    schema_class = schemas.MedicalRecordSchema
 
     decorators = [ jwt_required ]
 
-    def filter_objects(self, model_class=None, start=None, offset=None, **kwargs):
-        company = self.get_object(model_class=models.Company, **kwargs)
-        return company.employees[start:offset]
+    def get_object():
+        current_user = get_current_user()
+        if not hasattr(current_user, medical_record):
+            abort(401)
+        return current_user.medical_record
 
-    def create(self, *args, **kwargs):
-        self.company = self.get_object(model_class=models.Company, **kwargs)
-        return super().create(*args, **kwargs)
-
-    def perform_create(self, employee):
-        employee_account = models.Account()
-        employee_account.username = employee.username
-        employee_account.email = employee.email
-        employee_account.password = employee.password
-        employee_account.role = models.Role.EMPLOYEE
-        #employee_account.user = employee
-        employee_account.save()
-
-        employee.account = employee_account
-        self.company.employees.append( employee )
-        self.company.employees.save()
+    def perform_create(self, medical_record):
+        current_user = get_current_user()
+        current_user.medical_record = medical_record
+        super().perform_create(medical_record)
 
 
-class EmployeeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-
-    route_path = "/employee/<string:id>"
-    route_name = "employee_retrieve_update_destroy"
-
-    model_class = models.Employee
-    schema_class = schemas.EmployeeSchema
-    unique_fields = ("email", "employeename" )
-
-    decorators = [ jwt_required ]
-
-    lookup_field_and_url_kwarg = {"id": "id"}
-
-
-utils.add_url_rule(api, EmployeeListCreateView, EmployeeRetrieveUpdateDestroyView)
+utils.add_url_rule(api, MedicalRecordCreateRetrieveView)

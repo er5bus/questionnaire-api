@@ -10,15 +10,18 @@ class Employee(BaseUser):
     birthday = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
     #phone =db.Column(db.String(20))
 
+    medical_record_pk = db.Column(db.Integer, db.ForeignKey('medicalrecord.pk'))
+    medical_record = db.relationship('MedicalRecord', foreign_keys=[medical_record_pk])
+
 
 class MedicalRecord(Base):
-    height = db.Column(db.String(200))
-    weight = db.Column(db.String(200))
-    medical_history = db.Column(db.String(200))
-    chronic_illness = db.Column(db.String(200))
 
-    #employee_pk = db.Column(db.Integer, db.ForeignKey('employee.pk'))
-    #employee = db.relationship(Employee, backref='medical_record', foreign_keys=[employee_pk])
+    sexe = db.Column(db.Integer)
+    age = db.Column(db.Integer)
+    height = db.Column(db.String(50))
+    tall = db.Column(db.String(50))
+    profession = db.Column(db.String(200))
+    home_work = db.Column(db.Integer)
 
 
 class EmployeeInvitation(BaseInvitation):

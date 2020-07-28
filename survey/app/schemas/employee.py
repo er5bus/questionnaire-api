@@ -6,6 +6,9 @@ from marshmallow.validate import Length
 class MedicalRecordSchema(BaseSchema):
     class Meta:
         model = models.MedicalRecord
+        exclude = ('pk',)
+
+    id = ma.Int(attribute='pk', dump_only=True)
 
     height = EscapedStr(max_length=150, required=True, validate=Length(max=200, min=1))
     weight = EscapedStr(max_length=150, required=True, validate=Length(max=128, min=1))
@@ -13,15 +16,21 @@ class MedicalRecordSchema(BaseSchema):
     chronic_illness = EscapedStr(max_length=128, required=True, validate=Length(max=128, min=1))
 
 
+class EmployeeInvitationSchema(BaseSchema):
+    class Meta:
+        model = models.EmployeeInvitation
+        exclude = ('pk',)
+
+    id = ma.Int(attribute='pk', dump_only=True)
+
+
 class EmployeeSchema(BaseSchema):
     class Meta:
         model = models.Employee
+        exclude = ('pk', 'discriminator', 'hashed_password')
 
-    first_name = EscapedStr(max_length=150, required=True, validate=Length(max=200, min=1))
-    last_name = EscapedStr(max_length=150, required=True, validate=Length(max=128, min=1))
-    phone = EscapedStr(max_length=128, required=True, validate=Length(max=128, min=1))
+    id = ma.Int(attribute='pk', dump_only=True)
 
-    # Change me later
-    password = EscapedStr(max_length=150, required=True, validate=Length(max=128, min=1))
-    username = EscapedStr(max_length=128, required=True, validate=Length(max=128, min=1))
-    email = EscapedStr(max_length=128, required=True, validate=Length(max=500, min=1))
+    company = ma.Nested('app.schemas.company.CompanySchema')
+    invitation = ma.Nested(EmployeeInvitationSchema)
+    medical_record = ma.Nested(MedicalRecordSchema)

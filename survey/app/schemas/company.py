@@ -19,22 +19,3 @@ class CompanySchema(BaseSchema):
     specialities = EscapedStr(max_length=40, required=True, validate=Length(max=40, min=1))
     location = EscapedStr(max_length=128, required=True, validate=Length(max=128, min=1))
     founded_year = EscapedStr(max_length=20, required=True)
-
-
-class ManagerInvitationSchema(BaseSchema):
-    class Meta:
-        model = models.ManagerInvitation
-        include_relationships = False
-        exclude = ('pk',)
-
-    id = ma.Int(attribute='pk', dump_only=True)
-
-    email = EscapedStr(max_length=128, required=True, validate=Length(max=128, min=1))
-    full_name = EscapedStr(max_length=200, required=True, validate=Length(max=200, min=1))
-    subject = EscapedStr(max_length=128, required=True, validate=Length(min=1, max=500))
-
-    token = EscapedStr(dump_only=True)
-    send_at = ma.DateTime(dump_only=True)
-
-    is_created = ma.Boolean(dump_only=True)
-
