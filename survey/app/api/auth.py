@@ -40,6 +40,7 @@ class InvitationView(generics.RetrieveAPIView):
 
     lookup_field_and_url_kwarg = {"token": "token"}
 
+
 class BaseUserRegisterView(generics.CreateAPIView, generics.OptionsAPIView):
 
     route_path = "/auth/register/<string:token>"
@@ -59,7 +60,10 @@ class BaseUserRegisterView(generics.CreateAPIView, generics.OptionsAPIView):
         return {**response, "access_token": self.access_token }, code
 
     def perform_create(self, user):
-        user.role = models.Role.MODERATOR
+        if isinstance(self.invitation, models.ManagerInvitation):
+            user.role = models.Role.MODERATOR
+        else:
+            user.role = models.Role.EMPLOYEE
         user.invitation = self.invitation
         user.company = self.invitation.company
         self.invitation.token=None

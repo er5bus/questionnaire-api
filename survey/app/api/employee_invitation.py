@@ -9,7 +9,7 @@ from datetime import datetime
 import uuid
 
 
-class ManagerInvitationSendMailView(generics.CreateAPIView):
+class EmployeeInvitationSendMailView(generics.CreateAPIView):
 
     message_html = """<h1>Hello {}!</h1>
 
@@ -23,15 +23,15 @@ class ManagerInvitationSendMailView(generics.CreateAPIView):
 <p>Best Regards,</p>
 <p>The Team.</p>
 """
-    route_path = "/company/<int:company_id>/send/invitation/manager/<int:manager_id>"
-    route_name = "invitation_manager_send_mail"
+    route_path = "/company/<int:company_id>/send/invitation/employee/<int:employee_id>"
+    route_name = "invitation_employee_send_mail"
 
-    lookup_field_and_url_kwarg = {"company_id": "company_pk", "manager_id": "pk"}
+    lookup_field_and_url_kwarg = {"company_id": "company_pk", "employee_id": "pk"}
 
     decorators = [ jwt_required ]
 
-    model_class= models.ManagerInvitation
-    schema_class = schemas.ManagerInvitationSchema
+    model_class= models.EmployeeInvitation
+    schema_class = schemas.EmployeeInvitationSchema
 
     @classmethod
     def send_email(cls, invitation):
@@ -58,13 +58,13 @@ class ManagerInvitationSendMailView(generics.CreateAPIView):
         return invitation
 
 
-class ManagerInvitationListCreateView(generics.ListCreateAPIView):
+class EmployeeInvitationListCreateView(generics.ListCreateAPIView):
 
-    route_path = "/company/<int:company_id>/invitations/manager"
-    route_name = "invitation_manager_list_create"
+    route_path = "/company/<int:company_id>/invitations/employee"
+    route_name = "invitation_employee_list_create"
 
-    model_class = models.ManagerInvitation
-    schema_class = schemas.ManagerInvitationSchema
+    model_class = models.EmployeeInvitation
+    schema_class = schemas.EmployeeInvitationSchema
     #unique_fields = ("email", )
 
     lookup_field_and_url_kwarg = {"company_id": "company_pk"}
@@ -75,24 +75,24 @@ class ManagerInvitationListCreateView(generics.ListCreateAPIView):
         self.company = models.Company.query.filter_by(pk=kwargs.get('company_id')).first_or_404()
         return super().create(*args, **kwargs)
 
-    def perform_create(self, manager_invitation):
-        manager_invitation.company = self.company
-        manager_invitation.token = uuid.uuid4()
-        super().perform_create(manager_invitation)
-        ManagerInvitationSendMailView.send_email(manager_invitation)
+    def perform_create(self, employee_invitation):
+        employee_invitation.company = self.company
+        employee_invitation.token = uuid.uuid4()
+        super().perform_create(employee_invitation)
+        EmployeeInvitationSendMailView.send_email(employee_invitation)
 
 
-class ManagerInvitationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    route_path = "/company/<int:company_id>/invitation/manager/<int:manager_id>"
-    route_name = "invitation_manager_retrieve_update_destroy"
+class EmployeeInvitationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    route_path = "/company/<int:company_id>/invitation/employee/<int:employee_id>"
+    route_name = "invitation_employee_retrieve_update_destroy"
 
-    model_class = models.ManagerInvitation
-    schema_class = schemas.ManagerInvitationSchema
+    model_class = models.EmployeeInvitation
+    schema_class = schemas.EmployeeInvitationSchema
     #unique_fields = ("email", )
 
-    lookup_field_and_url_kwarg = {"company_pk": "company_pk", "manager_id": "pk"}
+    lookup_field_and_url_kwarg = {"company_pk": "company_pk", "employee_id": "pk"}
 
     decorators = [ jwt_required ]
 
 
-utils.add_url_rule(api, ManagerInvitationListCreateView, ManagerInvitationSendMailView, ManagerInvitationRetrieveUpdateDestroyView)
+utils.add_url_rule(api, EmployeeInvitationListCreateView, EmployeeInvitationSendMailView, EmployeeInvitationRetrieveUpdateDestroyView)

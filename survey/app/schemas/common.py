@@ -3,6 +3,14 @@ from ._behaviors import BaseSchema, EscapedStr, TimestampMixin, UniqueIdMixin
 from marshmallow.validate import Length, Email
 
 
+class InvitationInfoSchema(BaseSchema):
+    class Meta:
+        model = model.InvitationInfo
+        exclude = ('pk', )
+
+    id = ma.Int(attribute='pk', dump_only=True)
+
+
 class BaseInvitationSchema(BaseSchema):
     class Meta:
         model = models.BaseInvitation
@@ -10,6 +18,7 @@ class BaseInvitationSchema(BaseSchema):
         exclude = ('pk', 'discriminator')
 
     id = ma.Int(attribute='pk', dump_only=True)
+    invitationList = ma.List(ma.Nested('InvitationInfoSchema'))
 
 
 class BaseUserSchema(BaseSchema):

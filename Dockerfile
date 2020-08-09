@@ -11,8 +11,10 @@ COPY ./entrypoint.sh ./requirements.txt /
 RUN ["pip", "install", "-r", "/requirements.txt"]
 
 # Create New user & group
-RUN groupadd -r uswgi && useradd -r -g uswgi uswgi
-USER uswgi
+#RUN groupadd -r uswgi && useradd -r -g uswgi uswgi
+#USER uswgi
+
+#USER 1000
 
 # Copy files
 COPY ./survey /survey

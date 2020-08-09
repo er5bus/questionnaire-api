@@ -19,3 +19,13 @@ class CompanySchema(BaseSchema):
     specialities = EscapedStr(max_length=40, required=True, validate=Length(max=40, min=1))
     location = EscapedStr(max_length=128, required=True, validate=Length(max=128, min=1))
     founded_year = EscapedStr(max_length=20, required=True)
+
+
+class DepartmentSchema(BaseSchema):
+    class Meta:
+        model = models.Department
+        include_relationships = False
+        exclude = ('pk',)
+
+    id = ma.Int(attribute='pk', dump_only=True)
+

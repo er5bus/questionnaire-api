@@ -5,13 +5,20 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
 
+class InvitationInfo(Base, TimestampMixin):
+
+    email = db.Column(db.String(128), unique=True)
+    full_name = db.Column(db.String(200))
+
+    invitation_pk = db.Column(db.Integer, db.ForeignKey('baseinvitation.pk'))
+    invitation = db.relationship('BaseInvitation', backref=db.backref("invitationList", lazy="joined"), foreign_keys=[invitation_pk])
+
+
 class BaseInvitation(Base, TimestampMixin):
 
     discriminator = db.Column('type', db.String(50))
     __mapper_args__ = { 'polymorphic_identity': 'baseinvitation', 'polymorphic_on': discriminator }
 
-    email = db.Column(db.String(128), unique=True)
-    full_name = db.Column(db.String(200))
     subject = db.Column(db.String(128))
     token = db.Column(db.Text)
     send_at = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
