@@ -24,5 +24,11 @@ class EscapedStr(ma.Field):
 
 class BaseSchema(ma.ModelSchema):
 
+    id = ma.Int(attribute='pk', dump_only=True)
+
     def on_bind_field(self, field_name, field_obj):
         field_obj.data_key = utils.camelcase(field_obj.data_key or field_name)
+
+    class Meta:
+        def __init__(self, *args, **kwargs):
+            self.exclude = ('pk', ) if not self.exclude else (self.exclude + ('pk', ))

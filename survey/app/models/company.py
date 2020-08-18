@@ -19,8 +19,6 @@ class Company(Base):
     #author_pk = db.Column(db.Integer, db.ForeignKey('baseuser.pk'))
 
     #invitations = db.relationship("app.models.common.BaseInvitation", back_populates="company")
-    #employees = db.relationship("app.models.common.BaseUser", back_populates="company")
-
     departments = db.relationship("Department", back_populates="company")
 
 
@@ -30,3 +28,5 @@ class Department(Base):
 
     company_pk = db.Column(db.Integer, db.ForeignKey('company.pk'))
     company = db.relationship(Company, backref=db.backref("departments", lazy="joined"), foreign_keys=[company_pk])
+
+    employees = db.relationship("app.models.common.BaseUser", back_populates="department")

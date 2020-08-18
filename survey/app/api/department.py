@@ -30,7 +30,7 @@ class DepartmentListCreateView(generics.ListCreateAPIView):
 
 
 class DepartmentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    route_path = "/department/<int:id>"
+    route_path = "/company/<int:company_id>/department/<int:id>"
     route_name = "department_retrieve_update_destroy"
 
     model_class = models.Department

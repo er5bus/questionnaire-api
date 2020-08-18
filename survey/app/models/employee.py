@@ -1,5 +1,6 @@
 from .. import db
 from ._behaviors import Base
+from ._types import JsonEncodedDict
 from .common import BaseUser, BaseInvitation
 from datetime import datetime
 
@@ -12,6 +13,19 @@ class Employee(BaseUser):
 
     medical_record_pk = db.Column(db.Integer, db.ForeignKey('medicalrecord.pk'))
     medical_record = db.relationship('MedicalRecord', foreign_keys=[medical_record_pk])
+
+    question_history_pk = db.Column(db.Integer, db.ForeignKey('questionhistory.pk'))
+    question_history = db.relationship('QuestionHistory', foreign_keys=[medical_record_pk])
+
+
+class QuestionHistory(Base):
+
+    current_page = db.Column(db.Integer)
+    selected_body_area = db.Column(JsonEncodedDict)
+    current_Question = db.Column(db.Integer)
+    scores = db.Column(JsonEncodedDict)
+    answered_questions = db.Column(JsonEncodedDict)
+    extra_args = db.Column(JsonEncodedDict)
 
 
 class MedicalRecord(Base):
@@ -26,7 +40,3 @@ class MedicalRecord(Base):
 
 class EmployeeInvitation(BaseInvitation):
     __mapper_args__ = {'polymorphic_identity':'employeeinvitation'}
-
-    def generate_token(self, company_id):
-        s = Serializer(current_app.config['SECRET_KEY'])
-        return s.dumps({ 'id': str(self.id), 'company_id': company_id, 'invitation': 'employee' }).decode('utf-8')

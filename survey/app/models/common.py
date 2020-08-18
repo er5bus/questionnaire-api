@@ -24,10 +24,16 @@ class BaseInvitation(Base, TimestampMixin):
     send_at = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
     is_created = db.Column(db.Boolean, default=True)
 
-    company_pk = db.Column(db.Integer, db.ForeignKey('company.pk'))
-    company = db.relationship('app.models.company.Company', backref=db.backref("invitations", lazy="joined"), foreign_keys=[company_pk])
+    department_pk = db.Column(db.Integer, db.ForeignKey('department.pk'))
+    department = db.relationship('app.models.company.Department', backref=db.backref("invitations", lazy="joined"), foreign_keys=[department_pk])
 
     account = db.relationship('app.models.common.BaseUser', back_populates='invitation')
+
+
+class Role:
+    ADMIN = 1
+    MANAGER = 2
+    EMPLOYEE = 4
 
 
 class BaseUser(Base, TimestampMixin):
@@ -52,8 +58,8 @@ class BaseUser(Base, TimestampMixin):
     invitation_pk = db.Column(db.Integer, db.ForeignKey('baseinvitation.pk'))
     invitation = db.relationship(BaseInvitation, back_populates='account')
 
-    company_pk = db.Column(db.Integer, db.ForeignKey('company.pk'))
-    company = db.relationship('app.models.company.Company', backref=db.backref("employees", lazy="joined"), foreign_keys=[company_pk])
+    department_pk = db.Column(db.Integer, db.ForeignKey('department.pk'))
+    department = db.relationship('app.models.company.Department', backref=db.backref("employees", lazy="joined"), foreign_keys=[department_pk])
 
     @property
     def password(self):
@@ -67,25 +73,19 @@ class BaseUser(Base, TimestampMixin):
         return check_password_hash(self.hashed_password, plain_password)
 
     def is_administrator(self):
-        return self.can(Permission.ADMIN)
+        return self.can(Role.ADMIN)
 
-    def add_role(self, perm):
-        if not self.has_role(perm):
-            self.role += perm
+    def add_role(self, role):
+        if not self.has_role(role):
+            self.role += role
 
-    def remove_role(self, perm):
-        if self.has_role(perm):
-            self.role -= perm
+    def remove_role(self, role):
+        if self.has_role(role):
+            self.role -= role
 
     def reset_role(self):
         if self.role != 0:
             self.role = 0
 
-    def has_role(self, perm):
-        return self.role & perm == perm
-
-
-class Role:
-    ADMIN = 1
-    MODERATOR = 2
-    EMPLOYEE = 4
+    def has_role(self, role):
+        return self.role & role == role
