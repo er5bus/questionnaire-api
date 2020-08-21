@@ -23,10 +23,10 @@ class EmployeeInvitationSendMailView(generics.CreateAPIView):
 <p>Best Regards,</p>
 <p>The Team.</p>
 """
-    route_path = "/company/<int:company_id>/send/invitation/employee/<int:employee_id>"
+    route_path = "/department/<int:department_id>/employee-invitation/<int:invitation_id>/send"
     route_name = "invitation_employee_send_mail"
 
-    lookup_field_and_url_kwarg = {"company_id": "company_pk", "employee_id": "pk"}
+    lookup_field_and_url_kwarg = {"department_id": "department_pk", "invitation_id": "pk"}
 
     decorators = [ jwt_required ]
 
@@ -35,21 +35,23 @@ class EmployeeInvitationSendMailView(generics.CreateAPIView):
 
     @classmethod
     def send_email(cls, invitation):
-        message = Message(subject="Create Password", sender=current_app.config['FLASK_MAIL_SENDER'], recipients=[invitation.email])
-        message.html = cls.message_html.format(
-            invitation.full_name,
-            str(current_app.config['REGISTER_LINK']).format(invitation.token),
-            invitation.subject,
-            str(current_app.config['REGISTER_LINK']).format(invitation.token),
-        )
-        mail.send(message=message)
+        with mail.connect() as conn:
+            for user_invitation in invitation.invitations:
+                message = Message(subject="Create Password", sender=current_app.config['FLASK_MAIL_SENDER'], recipients=[user_invitation.email])
+                message.html = cls.message_html.format(
+                    user_invitation.full_name,
+                    str(current_app.config['REGISTER_LINK']).format(invitation.token),
+                    invitation.subject,
+                    str(current_app.config['REGISTER_LINK']).format(invitation.token),
+                )
+                conn.send(message=message)
 
     def create(self, *args, **kwargs):
-        invitation = self.perform_update(**kwargs)
+        invitation = self.regenerate_token(**kwargs)
         self.send_email(invitation)
         return self.serialize(invitation, False), 200
 
-    def perform_update(self, **kwargs):
+    def regenerate_token(self, **kwargs):
         invitation = self.get_object( **kwargs )
         invitation.token = uuid.uuid4()
         invitation.send_at = datetime.now()
@@ -60,39 +62,55 @@ class EmployeeInvitationSendMailView(generics.CreateAPIView):
 
 class EmployeeInvitationListCreateView(generics.ListCreateAPIView):
 
-    route_path = "/company/<int:company_id>/invitations/employee"
+    route_path = "/department/<int:department_id>/employee-invitations"
     route_name = "invitation_employee_list_create"
 
     model_class = models.EmployeeInvitation
     schema_class = schemas.EmployeeInvitationSchema
-    #unique_fields = ("email", )
 
-    lookup_field_and_url_kwarg = {"company_id": "company_pk"}
+    unique_fields = ("email", )
+
+
+    lookup_field_and_url_kwarg = {"department_id": "department_pk"}
 
     decorators = [ jwt_required ]
 
+    def filter_unique_object(self, model_class=None, **kwargs):
+        return super().filter_unique_object(model_class=models.InvitationInfo, **kwargs)
+
+    def validate_unique(self, instance):
+        for user_invitation in instance.invitations:
+            super().validate_unique(instance=user_invitation)
+
     def create(self, *args, **kwargs):
-        self.company = models.Company.query.filter_by(pk=kwargs.get('company_id')).first_or_404()
+        self.department = models.Department.query.filter_by(pk=kwargs.get('department_id')).first_or_404()
         return super().create(*args, **kwargs)
 
     def perform_create(self, employee_invitation):
-        employee_invitation.company = self.company
-        employee_invitation.token = uuid.uuid4()
+        employee_invitation.department = self.department
         super().perform_create(employee_invitation)
         EmployeeInvitationSendMailView.send_email(employee_invitation)
 
 
 class EmployeeInvitationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    route_path = "/company/<int:company_id>/invitation/employee/<int:employee_id>"
+    route_path = "/department/<int:department_id>/employee-invitation/<int:employee_id>"
     route_name = "invitation_employee_retrieve_update_destroy"
 
     model_class = models.EmployeeInvitation
     schema_class = schemas.EmployeeInvitationSchema
-    #unique_fields = ("email", )
 
-    lookup_field_and_url_kwarg = {"company_pk": "company_pk", "employee_id": "pk"}
+    lookup_field_and_url_kwarg = {"department_id": "department_pk", "employee_id": "pk"}
+
+    unique_fields = ("email", )
 
     decorators = [ jwt_required ]
+
+    def filter_unique_object(self, model_class=None, **kwargs):
+        return super().filter_unique_object(model_class=models.InvitationInfo, **kwargs)
+
+    def validate_unique(self, instance):
+        for user_invitation in instance.invitations:
+            super().validate_unique(instance=user_invitation)
 
 
 utils.add_url_rule(api, EmployeeInvitationListCreateView, EmployeeInvitationSendMailView, EmployeeInvitationRetrieveUpdateDestroyView)

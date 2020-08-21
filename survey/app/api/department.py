@@ -24,7 +24,6 @@ class DepartmentListCreateView(generics.ListCreateAPIView):
         return super().create(*args, **kwargs)
 
     def perform_create(self, department):
-        department.role = models.Role.EMPLOYEE
         department.company = self.company
         super().perform_create(department)
 
@@ -39,7 +38,7 @@ class DepartmentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView)
 
     decorators = [ jwt_required ]
 
-    lookup_field_and_url_kwarg = {"id": "id"}
+    lookup_field_and_url_kwarg = {"company_id": "company_pk", "id": "id"}
 
 
 utils.add_url_rule(api, DepartmentListCreateView, DepartmentRetrieveUpdateDestroyView)

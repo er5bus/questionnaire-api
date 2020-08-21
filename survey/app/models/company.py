@@ -16,17 +16,13 @@ class Company(Base):
     location = db.Column(db.Text, nullable=True)
     founded_year = db.Column(db.String(150), nullable=True)
 
-    #author_pk = db.Column(db.Integer, db.ForeignKey('baseuser.pk'))
-
-    #invitations = db.relationship("app.models.common.BaseInvitation", back_populates="company")
-    departments = db.relationship("Department", back_populates="company")
+    author_pk = db.Column(db.Integer, db.ForeignKey("baseuser.pk"))
+    author = db.relationship("app.models.common.BaseUser", foreign_keys=[author_pk])
 
 
 class Department(Base):
     name = db.Column(db.String(150), nullable=True)
     description = db.Column(db.Text, nullable=True)
 
-    company_pk = db.Column(db.Integer, db.ForeignKey('company.pk'))
+    company_pk = db.Column(db.Integer, db.ForeignKey("company.pk"))
     company = db.relationship(Company, backref=db.backref("departments", lazy="joined"), foreign_keys=[company_pk])
-
-    employees = db.relationship("app.models.common.BaseUser", back_populates="department")

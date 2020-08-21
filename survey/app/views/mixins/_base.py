@@ -3,6 +3,7 @@ from ..utils import camelcase
 from marshmallow.exceptions import ValidationError
 from flask_jwt_extended import jwt_required, get_current_user
 from collections import Iterable
+import functools
 
 
 class BaseMethodMixin:
@@ -18,6 +19,8 @@ class BaseMethodMixin:
 
     # lookup_field as the key and lookup_url_kwarg as the value
     lookup_field_and_url_kwarg = dict()
+
+    model_pk_attr = "pk"
 
     unique_fields = tuple()
 
@@ -57,8 +60,9 @@ class BaseMethodMixin:
         page = request.args.get('page', type=int, default=1)
         item_per_page = request.args.get('item_per_page', type=int, default=self.item_per_page)
         paginator = self.get_object_query(**kwargs).paginate(page, item_per_page, error_out=False)
-        return paginator.items, paginator.has_next, page
+        return paginator
 
+    @functools.lru_cache(maxsize=128)
     def filter_unique_object(self, model_class=None, **kwargs):
         model_class = self.model_class if not model_class else model_class
         return model_class.query.filter_by(**kwargs).first()
@@ -67,15 +71,21 @@ class BaseMethodMixin:
         serializer = self.schema_class(many=many) if not schema_class else schema_class(many=many)
         return serializer.dump(data)
 
-    def validate_unique(self, instance, current_object = None):
+    def validate_unique(self, instance):
         errors = {}
         for unique_field in self.unique_fields:
+            print(unique_field)
+            # get object with the same field
             unique_field_value = getattr(instance, unique_field)
-            unique_object = self.filter_unique_object(**{ unique_field: str(unique_field_value) if isinstance(unique_field_value, str) else unique_field_value })
-            if (unique_object and (not current_object or not hasattr(current_object, 'pk'))) \
-                or (unique_object and hasattr(current_object, 'pk') and current_object and \
-                    unique_object.pk and current_object.pk and \
-                    str(unique_object.pk) != str(current_object.pk)):
+            unique_object = self.filter_unique_object(**{ unique_field: unique_field_value })
+            # fetch the real object
+            current_object = None
+            if hasattr(instance, self.model_pk_attr) and getattr(instance, self.model_pk_attr):
+                current_object = self.filter_unique_object(**{ self.model_pk_attr: getattr(instance, self.model_pk_attr) })
+            # check if the object already exist
+            if (unique_object and (not current_object or not hasattr(current_object, self.model_pk_attr))) \
+                or (unique_object and current_object and hasattr(current_object, self.model_pk_attr) and hasattr(unique_object, self.model_pk_attr) and \
+                    getattr(unique_object, self.model_pk_attr) != getattr(current_object, self.model_pk_attr)):
                 errors[camelcase(unique_field)] = "This field is already exist."
         if errors:
             raise ValidationError(errors)
@@ -87,7 +97,7 @@ class BaseMethodMixin:
                 instance = serializer.load(data, unknown="EXCLUDE", instance=instance_object, partial=partial)
             else:
                 instance = serializer.load(data, unknown="EXCLUDE", partial=partial)
-            self.validate_unique(instance, instance_object)
+            self.validate_unique(instance)
             return instance
         except ValidationError as err:
             self.raise_exception(err)

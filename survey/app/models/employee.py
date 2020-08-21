@@ -6,26 +6,15 @@ from datetime import datetime
 
 
 class Employee(BaseUser):
+    __mapper_args__ = {"polymorphic_identity":"employee"}
 
-    __mapper_args__ = {'polymorphic_identity':'employee'}
-    birthday = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
-    #phone =db.Column(db.String(20))
+    question_history = db.Column(JsonEncodedDict)
 
-    medical_record_pk = db.Column(db.Integer, db.ForeignKey('medicalrecord.pk'))
-    medical_record = db.relationship('MedicalRecord', foreign_keys=[medical_record_pk])
+    medical_record_pk = db.Column(db.Integer, db.ForeignKey("medicalrecord.pk"), nullable=True)
+    medical_record = db.relationship("MedicalRecord", foreign_keys=[medical_record_pk])
 
-    question_history_pk = db.Column(db.Integer, db.ForeignKey('questionhistory.pk'))
-    question_history = db.relationship('QuestionHistory', foreign_keys=[medical_record_pk])
-
-
-class QuestionHistory(Base):
-
-    current_page = db.Column(db.Integer)
-    selected_body_area = db.Column(JsonEncodedDict)
-    current_Question = db.Column(db.Integer)
-    scores = db.Column(JsonEncodedDict)
-    answered_questions = db.Column(JsonEncodedDict)
-    extra_args = db.Column(JsonEncodedDict)
+    department_pk = db.Column(db.Integer, db.ForeignKey("department.pk"), nullable=True)
+    department = db.relationship("app.models.company.Department", backref=db.backref("employees", lazy=True), foreign_keys=[department_pk])
 
 
 class MedicalRecord(Base):
@@ -39,4 +28,8 @@ class MedicalRecord(Base):
 
 
 class EmployeeInvitation(BaseInvitation):
-    __mapper_args__ = {'polymorphic_identity':'employeeinvitation'}
+
+    __mapper_args__ = {"polymorphic_identity":"employeeinvitation"}
+
+    department_pk = db.Column(db.Integer, db.ForeignKey("department.pk"), nullable=True)
+    department = db.relationship("app.models.company.Department", backref=db.backref("employee_invitations", lazy=True), foreign_keys=[department_pk])

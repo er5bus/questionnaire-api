@@ -17,7 +17,7 @@ class CompanyListCreateView(generics.ListCreateAPIView):
     decorators = [ jwt_required ]
 
     def perform_create(self, company):
-        #company.author = get_current_user()
+        company.author = get_current_user()
         super().perform_create(company)
 
 

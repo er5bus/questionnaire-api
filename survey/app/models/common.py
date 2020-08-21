@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declared_attr
 from ._behaviors import Base, TimestampMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import uuid
 
 
 class InvitationInfo(Base, TimestampMixin):
@@ -10,24 +11,22 @@ class InvitationInfo(Base, TimestampMixin):
     email = db.Column(db.String(128), unique=True)
     full_name = db.Column(db.String(200))
 
-    invitation_pk = db.Column(db.Integer, db.ForeignKey('baseinvitation.pk'))
-    invitation = db.relationship('BaseInvitation', backref=db.backref("invitationList", lazy="joined"), foreign_keys=[invitation_pk])
+    invitation_pk = db.Column(db.Integer, db.ForeignKey("baseinvitation.pk", ondelete="CASCADE"))
+    invitation = db.relationship("BaseInvitation", back_populates="invitations", lazy=True, foreign_keys=[invitation_pk])
 
 
 class BaseInvitation(Base, TimestampMixin):
 
-    discriminator = db.Column('type', db.String(50))
-    __mapper_args__ = { 'polymorphic_identity': 'baseinvitation', 'polymorphic_on': discriminator }
+    discriminator = db.Column("type", db.String(50))
+    __mapper_args__ = { "polymorphic_identity": "baseinvitation", "polymorphic_on": discriminator }
 
     subject = db.Column(db.String(128))
-    token = db.Column(db.Text)
+    token = db.Column(db.Text, default=uuid.uuid4())
     send_at = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
-    is_created = db.Column(db.Boolean, default=True)
+    is_expired = db.Column(db.Boolean, default=False)
 
-    department_pk = db.Column(db.Integer, db.ForeignKey('department.pk'))
-    department = db.relationship('app.models.company.Department', backref=db.backref("invitations", lazy="joined"), foreign_keys=[department_pk])
-
-    account = db.relationship('app.models.common.BaseUser', back_populates='invitation')
+    accounts = db.relationship("BaseUser", back_populates="invitation")
+    invitations = db.relationship(InvitationInfo, back_populates="invitation", cascade="all, delete", passive_deletes=True, lazy=True)
 
 
 class Role:
@@ -38,12 +37,13 @@ class Role:
 
 class BaseUser(Base, TimestampMixin):
 
-    discriminator = db.Column('type', db.String(50))
-    __mapper_args__ = { 'polymorphic_identity': 'baseuser', 'polymorphic_on': discriminator }
+    discriminator = db.Column("type", db.String(50))
+    __mapper_args__ = { "polymorphic_identity": "simpleuser", "polymorphic_on": discriminator }
 
     hashed_password = db.Column(db.String(128))
 
     email = db.Column(db.String(128), unique=True)
+    professional_email = db.Column(db.String(128), unique=True, nullable=True)
     username = db.Column(db.String(128), unique=True)
     role = db.Column(db.Integer, nullable=True)
 
@@ -55,15 +55,13 @@ class BaseUser(Base, TimestampMixin):
     last_seen = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
     deleted_at = db.Column(db.DateTime, nullable=True)
 
-    invitation_pk = db.Column(db.Integer, db.ForeignKey('baseinvitation.pk'))
-    invitation = db.relationship(BaseInvitation, back_populates='account')
+    invitation_pk = db.Column(db.Integer, db.ForeignKey("baseinvitation.pk"))
+    invitation = db.relationship("BaseInvitation", back_populates="accounts")
 
-    department_pk = db.Column(db.Integer, db.ForeignKey('department.pk'))
-    department = db.relationship('app.models.company.Department', backref=db.backref("employees", lazy="joined"), foreign_keys=[department_pk])
 
     @property
     def password(self):
-        raise AttributeError('Password is not readable attribute')
+        raise AttributeError("Password is not readable attribute")
 
     @password.setter
     def password(self, plain_password):

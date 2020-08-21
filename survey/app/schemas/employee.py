@@ -1,31 +1,33 @@
 from .. import models, ma
-from ._behaviors import BaseSchema, EscapedStr, TimestampMixin, UniqueIdMixin
+from .common import BaseUserSchema
+from ._behaviors import BaseSchema, EscapedStr
 from marshmallow.validate import Length
 
 
 class MedicalRecordSchema(BaseSchema):
-    class Meta:
+    class Meta(BaseSchema.Meta):
         model = models.MedicalRecord
-        exclude = ('pk',)
 
-    id = ma.Int(attribute='pk', dump_only=True)
+
+class EmployeeSchema(BaseUserSchema):
+    class Meta(BaseUserSchema.Meta):
+        model = models.Employee
+        exclude = ("pk", "discriminator")
+
+    invitation = ma.Nested("EmployeeInvitationSchema")
+    medical_record = ma.Nested(MedicalRecordSchema)
 
 
 class EmployeeInvitationSchema(BaseSchema):
-    class Meta:
+    class Meta(BaseSchema.Meta):
         model = models.EmployeeInvitation
-        exclude = ('pk',)
+        include_relationships = False
+        exclude = ("pk", "discriminator")
 
-    id = ma.Int(attribute='pk', dump_only=True)
+    subject = EscapedStr(max_length=128, required=True, validate=Length(min=1, max=500))
 
+    token = EscapedStr(dump_only=True)
+    send_at = ma.DateTime(dump_only=True)
 
-class EmployeeSchema(BaseSchema):
-    class Meta:
-        model = models.Employee
-        exclude = ('pk', 'discriminator', 'hashed_password')
+    invitations = ma.Nested("app.schemas.common.InvitationInfoSchema", many=True)
 
-    id = ma.Int(attribute='pk', dump_only=True)
-
-    company = ma.Nested('app.schemas.company.CompanySchema')
-    invitation = ma.Nested(EmployeeInvitationSchema)
-    medical_record = ma.Nested(MedicalRecordSchema)

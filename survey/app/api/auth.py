@@ -4,7 +4,6 @@ from ..views import generics , utils
 from flask import request, abort, current_app
 from sqlalchemy import or_
 from flask_jwt_extended import create_access_token, get_jwt_identity, get_raw_jwt, get_jti, jwt_required
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadData
 
 
 @api.before_app_first_request
@@ -31,49 +30,6 @@ def user_loader_callback_loader(jwt_identity):
     return models.BaseUser.query.filter_by(pk=jwt_identity).first_or_404()
 
 
-class InvitationView(generics.RetrieveAPIView):
-    route_path = "/auth/invitation/<string:token>"
-    route_name = "invitation"
-
-    model_class = models.BaseInvitation
-    schema_class = schemas.BaseInvitationSchema
-
-    lookup_field_and_url_kwarg = {"token": "token"}
-
-
-class BaseUserRegisterView(generics.CreateAPIView, generics.OptionsAPIView):
-
-    route_path = "/auth/register/<string:token>"
-    route_name = "user_register"
-
-    model_class = models.BaseUser
-    schema_class = schemas.BaseUserSchema
-
-    unique_fields = ('email', 'username')
-
-    invitation = None
-    access_token = None
-
-    def create (self, *args, **kwargs):
-        self.invitation = models.BaseInvitation.query.filter_by(token=kwargs.get("token")).first_or_404()
-        (response, code) = super().create(self, *args, **kwargs)
-        return {**response, "access_token": self.access_token }, code
-
-    def perform_create(self, user):
-        if isinstance(self.invitation, models.ManagerInvitation):
-            user.role = models.Role.MODERATOR
-        else:
-            user.role = models.Role.EMPLOYEE
-        user.invitation = self.invitation
-        user.company = self.invitation.company
-        self.invitation.token=None
-        self.invitation.is_created=True
-        db.session.add(user)
-        db.session.add(self.invitation)
-        db.session.commit()
-        self.access_token = create_access_token(identity=str(user.pk))
-
-
 class BaseUserLoginView(generics.CreateAPIView, generics.OptionsAPIView):
     route_path = "/auth/login"
     route_name = "user_login"
@@ -89,7 +45,6 @@ class BaseUserLoginView(generics.CreateAPIView, generics.OptionsAPIView):
                 data = schemas.EmployeeSchema(many=False).dump(current_user)
             else:
                 data = schemas.BaseUserSchema(many=False).dump(current_user)
-            print(data)
             return {**data ,"access_token": create_access_token(identity=str(current_user.pk))}, 200
         return abort(400, {"Oops": "Invalid email or password."})
 
@@ -107,4 +62,4 @@ class BaseUserLogoutView(generics.CreateAPIView):
         return {"message": "Successfully logged out"}, 200
 
 
-utils.add_url_rule(api, BaseUserRegisterView, InvitationView, BaseUserLoginView, BaseUserLogoutView)
+utils.add_url_rule(api, BaseUserLoginView, BaseUserLogoutView)

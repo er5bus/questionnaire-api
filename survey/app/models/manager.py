@@ -6,11 +6,14 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadData
 
 
 class Manager(BaseUser):
-    __mapper_args__ = {'polymorphic_identity':'manager'}
+    __mapper_args__ = {"polymorphic_identity":"manager"}
 
-    #phone = db.Column(db.String(20))
-
+    company_pk = db.Column(db.Integer, db.ForeignKey("company.pk"))
+    company = db.relationship("app.models.company.Company", backref=db.backref("managers", lazy=True), foreign_keys=[company_pk])
 
 
 class ManagerInvitation(BaseInvitation):
-    __mapper_args__ = {'polymorphic_identity':'managerinvitation'}
+    __mapper_args__ = {"polymorphic_identity":"managerinvitation"}
+
+    company_pk = db.Column(db.Integer, db.ForeignKey("company.pk"), nullable=True)
+    company = db.relationship("app.models.company.Company", backref=db.backref("manager_invitations", lazy=True), foreign_keys=[company_pk])

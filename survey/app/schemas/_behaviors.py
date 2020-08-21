@@ -1,18 +1,7 @@
-from .. import ma
+from .. import ma, db
 from ..views import utils
-from flask import escape
-from marshmallow import pre_load, post_load, post_dump
-from collections import Iterable
+from flask import escape, Markup
 from functools import partialmethod
-
-
-class UniqueIdMixin(object):
-    id = ma.String(allow_none=True, dump_only=True)
-
-
-class TimestampMixin(object):
-    created = ma.DateTime()
-    updated = ma.DateTime()
 
 
 class EscapedStr(ma.Field):
@@ -21,14 +10,18 @@ class EscapedStr(ma.Field):
         field_content = super().deserialize(value, attr, data, **kwargs)
         return escape(field_content) if isinstance(field_content, str) else field_content
 
+    def serialize(self, value, *args, **kwargs):
+        field_content = super().serialize(value, *args, **kwargs)
+        return Markup.unescape(field_content)
 
-class BaseSchema(ma.ModelSchema):
 
-    id = ma.Int(attribute='pk', dump_only=True)
+class BaseSchema(ma.SQLAlchemyAutoSchema):
+    id = ma.Int(attribute='pk')
 
     def on_bind_field(self, field_name, field_obj):
         field_obj.data_key = utils.camelcase(field_obj.data_key or field_name)
 
     class Meta:
-        def __init__(self, *args, **kwargs):
-            self.exclude = ('pk', ) if not self.exclude else (self.exclude + ('pk', ))
+        load_instance = True
+        exclude = ("pk", )
+        dump_only = ("id", )
