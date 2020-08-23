@@ -38,7 +38,7 @@ class DepartmentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView)
 
     decorators = [ jwt_required ]
 
-    lookup_field_and_url_kwarg = {"company_id": "company_pk", "id": "id"}
+    lookup_field_and_url_kwarg = {"company_id": "company_pk", "id": "pk"}
 
 
 utils.add_url_rule(api, DepartmentListCreateView, DepartmentRetrieveUpdateDestroyView)

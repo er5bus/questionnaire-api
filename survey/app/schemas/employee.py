@@ -14,8 +14,8 @@ class EmployeeSchema(BaseUserSchema):
         model = models.Employee
         exclude = ("pk", "discriminator")
 
-    invitation = ma.Nested("EmployeeInvitationSchema")
-    medical_record = ma.Nested(MedicalRecordSchema)
+    invitation = ma.Nested("EmployeeInvitationSchema", dump_only=True)
+    medical_record = ma.Nested(MedicalRecordSchema, dump_only=True)
 
 
 class EmployeeInvitationSchema(BaseSchema):

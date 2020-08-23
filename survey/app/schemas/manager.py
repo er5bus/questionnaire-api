@@ -24,5 +24,5 @@ class ManagerSchema(BaseUserSchema):
         load_instance = True
         exclude = ("pk", "discriminator")
 
-    company = ma.Nested('app.schemas.company.CompanySchema')
-    invitation = ma.Nested(ManagerInvitationSchema)
+    company = ma.Nested('app.schemas.company.CompanySchema', dump_only=True)
+    invitation = ma.Nested(ManagerInvitationSchema, dump_only=True)
