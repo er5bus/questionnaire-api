@@ -15,7 +15,7 @@ class InvitationInfoSchema(BaseSchema):
 class BaseInvitationSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         model = models.BaseInvitation
-        exclude = ("pk", "discriminator", "is_expired", "token", "send_at")
+        exclude = BaseSchema.Meta.exclude + ("discriminator", "is_expired", "token", "send_at")
 
     company = ma.Nested('app.schemas.company.CompanySchema')
     department = ma.Nested('app.schemas.company.DepartmentSchema')
@@ -25,7 +25,7 @@ class BaseUserSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         model = models.BaseUser
         load_instance = True
-        exclude = ("discriminator", "hashed_password")
+        exclude = BaseSchema.Meta.exclude + ("discriminator", "hashed_password")
 
     email = EscapedStr(max_length=128, required=True, validate=[Length(max=128, min=1), Email()])
     professional_email = EscapedStr(max_length=128, required=True, validate=[Length(max=128, min=1), Email()])

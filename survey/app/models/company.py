@@ -1,8 +1,5 @@
 from .. import db
 from ._behaviors import Base
-from flask import current_app
-from datetime import datetime
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadData
 
 
 class Company(Base):

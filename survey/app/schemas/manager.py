@@ -8,7 +8,7 @@ class ManagerInvitationSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         model = models.ManagerInvitation
         include_relationships = False
-        exclude = ("pk", "discriminator")
+        exclude = BaseSchema.Meta.exclude + ("discriminator", )
 
     subject = EscapedStr(max_length=128, required=True, validate=Length(min=1, max=500))
 
@@ -22,7 +22,6 @@ class ManagerSchema(BaseUserSchema):
     class Meta(BaseUserSchema.Meta):
         model = models.Manager
         load_instance = True
-        exclude = ("pk", "discriminator")
 
     company = ma.Nested('app.schemas.company.CompanySchema', dump_only=True)
     invitation = ma.Nested(ManagerInvitationSchema, dump_only=True)

@@ -50,6 +50,7 @@ class BaseMethodMixin:
                     filter_kwargs[self.lookup_field_and_url_kwarg[lookup_field]] = value
         return filter_kwargs
 
+    @functools.lru_cache(maxsize=128)
     def get_object(self, **kwargs):
         instance = self.get_object_query(**kwargs).one_or_none()
         if instance is None:
@@ -58,7 +59,7 @@ class BaseMethodMixin:
 
     def paginate_query(self, **kwargs):
         page = request.args.get('page', type=int, default=1)
-        item_per_page = request.args.get('item_per_page', type=int, default=self.item_per_page)
+        item_per_page = request.args.get(camelcase('item_per_page'), type=int, default=self.item_per_page)
         paginator = self.get_object_query(**kwargs).paginate(page, item_per_page, error_out=False)
         return paginator
 

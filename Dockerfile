@@ -11,13 +11,15 @@ RUN ["pip", "install", "-r", "/requirements.txt"]
 COPY ./survey /survey
 WORKDIR /survey
 
-COPY ./entrypoint.sh /entrypoint.sh
 
 EXPOSE 5000 9191
 
 # Create New user & group
 RUN groupadd -r uswgi && useradd -r -g uswgi uswgi
 USER uswgi
+
+
+COPY ./entrypoint.sh /entrypoint.sh
 
 # Runtime configuration
 ENTRYPOINT ["/entrypoint.sh"]

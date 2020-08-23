@@ -5,7 +5,12 @@ set -e
 echo -e "Running $FLASK_CONFIG Configurations\n*****************\n"
 
 if [ $FLASK_RUN_MIGRATION = 'on' ]; then
-  exec sleep 5 && flask db upgrade &
+  echo -e "Wait for database to start\n***********\n"
+  exec sleep 10 &
+  wait $!
+  echo -e "Run migrations\n***********\n"
+  exec flask db upgrade &
+  wait $!
 fi
 
 if [ $FLASK_CONFIG = 'development' ]; then
