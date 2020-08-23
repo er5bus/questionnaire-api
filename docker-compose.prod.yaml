@@ -1,10 +1,9 @@
 version: '3'
 
 services:
-  survey_deploy:
+  survey_backend_deploy:
     build:
       context: .
-      dockerfile: Dockerfile.build
     restart: on-failure:5
     env_file:
       - ./.env

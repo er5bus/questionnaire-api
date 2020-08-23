@@ -5,7 +5,7 @@ set -e
 echo -e "Running $FLASK_CONFIG Configurations\n*****************\n"
 
 if [ $FLASK_RUN_MIGRATION = 'on' ]; then
-  exec flask db upgrade &
+  exec sleep 5 && flask db upgrade &
 fi
 
 if [ $FLASK_CONFIG = 'development' ]; then
