@@ -28,9 +28,6 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SENTRY_CDN = os.getenv('SENTRY_CDN', '<replace it with a database url>')
 
-    ROOT_USERNAME = os.getenv("ROOT_USERNAME", "hard to guess string")
-    ROOT_PASSWORD = os.getenv("ROOT_PASSWORD", "hard to guess string")
-
     @classmethod
     def init_app(cls, app):
         pass

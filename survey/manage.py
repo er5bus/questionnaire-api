@@ -1,6 +1,7 @@
-from app import create_app
+from src import create_app, models
 from werkzeug.exceptions import HTTPException
 import os
+import click
 
 
 application = create_app(os.getenv('FLASK_CONFIG', 'default'))
@@ -11,7 +12,20 @@ def handle_exception(e):
     return {'error': e.name.lower().replace(' ', '-'), 'code': e.code, 'message': e.description}, e.code
 
 
-@application.cli.command()
+@application.cli.command("create_admin")
+@click.argument('username')
+@click.argument('password')
+def create_admin(username, password):
+    root = models.BaseUser.query.filter_by(username=username).one_or_none()
+    if not root:
+        root = models.BaseUser()
+        root.username = username
+        root.password = password
+        root.role = models.Role.ADMIN
+        root.save()
+        
+
+@application.cli.command("test")
 def test():
     """Run the unit tests."""
     import unittest
