@@ -1,15 +1,11 @@
 from src import create_app, models
-from werkzeug.exceptions import HTTPException
 import os
 import click
 
 
 application = create_app(os.getenv('FLASK_CONFIG', 'default'))
 
-
-@application.errorhandler(HTTPException)
-def handle_exception(e):
-    return {'error': e.name.lower().replace(' ', '-'), 'code': e.code, 'message': e.description}, e.code
+import handle_errors
 
 
 @application.cli.command("create_admin")
@@ -23,7 +19,7 @@ def create_admin(username, password):
         root.password = password
         root.role = models.Role.ADMIN
         root.save()
-        
+
 
 @application.cli.command("test")
 def test():

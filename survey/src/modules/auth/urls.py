@@ -15,7 +15,3 @@ urls.add_url_rule(
     BaseUserLoginView,
     BaseUserLogoutView
 )
-
-
-# errors
-from . import errors

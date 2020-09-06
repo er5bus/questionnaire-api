@@ -37,6 +37,25 @@ services:
       - traefik.http.routers.adminer.rule=Host("${ADMINER_DOMAINE_NAME}")
       - traefik.http.services.adminer_service.loadbalancer.server.port=8080
 
+  axigen: 
+    image: axigen/axigen
+    restart: on-failure:5
+    volumes:
+      - ./mail:/var/opt/axigen 
+    ports: 
+      - 9443:9443 
+      - 993:993 
+      - 995:995 
+      - 25:25 
+      - 465:465
+      - 7000:7000
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.adminer.tls=${TLS}
+      - traefik.http.routers.adminer.rule=Host("${MAIL_DOMAINE_NAME}")
+      - traefik.http.services.adminer_service.loadbalancer.server.port=9000
+
+
 networks:
   default:
     external:
