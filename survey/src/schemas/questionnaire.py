@@ -33,7 +33,7 @@ class QuestionCategorySchema(BaseSchema):
 
     category = EscapedStr(max_length=500, required=True, validate=[OneOf(categories)])
     score = ma.Int(required=False)
-    questions = ma.Nested(QuestionSchema, many=True)
+    questions = ma.Nested(QuestionSchema, many=True, required=False)
 
 
 class QuestionnaireSchema(BaseSchema):
