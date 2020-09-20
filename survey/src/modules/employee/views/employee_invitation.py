@@ -1,4 +1,4 @@
-from .... import models, schemas, mail
+from .... import models, schemas, mail, db
 from ....tools.views import generics
 from flask_mail import Message
 from flask import current_app
