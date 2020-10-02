@@ -30,9 +30,9 @@ class BaseMethodMixin:
 
     def get_query(self, model_class=None, **kwargs):
         if kwargs:
-            query = self.model_class.query
+            query = self.model_class.query if model_class else model_class.query
             for field, value in kwargs.items():
-                query = query.filter( getattr(self.model_class, field) == value)
+                query = query.filter(getattr(self.model_class, field) == value)
             return query
         return self.model_class.query
 

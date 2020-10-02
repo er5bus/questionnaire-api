@@ -23,6 +23,7 @@ class QuestionSchema(BaseSchema):
 
     question = EscapedStr(max_length=500, required=True, validate=[Length(max=500, min=1)])
     answer = EscapedStr(max_length=500, required=True, validate=[Length(max=500, min=1)])
+    area = EscapedStr(max_length=500, required=False)
     score = ma.Int(required=False)
 
 

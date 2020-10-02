@@ -24,6 +24,7 @@ class QuestionCategory(Base):
 class Question(Base):
     question = db.Column(db.Text, nullable=True)
     answer = db.Column(db.Text, nullable=True)
+    area = db.Column(db.Text, nullable=True)
     score = db.Column(db.Integer, nullable=True)
 
     category_pk = db.Column(db.Integer, db.ForeignKey("questioncategory.pk", ondelete="CASCADE"))
