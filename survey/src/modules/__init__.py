@@ -13,3 +13,4 @@ api_blueprints = [
     questionnaire_blueprint,
     stats_blueprint
 ]
+

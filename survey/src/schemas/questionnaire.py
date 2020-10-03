@@ -5,17 +5,6 @@ from ._types import EscapedStr
 from marshmallow.validate import Length, OneOf
 
 
-categories = [
-    "PHYSIOTHERAPY",
-    "ERGONOMICS", 
-    "MEDICINE",
-    "PSYCHOLOGY",
-    "COACH",
-    "OSTEOPATHY",
-    "STOPP_WORKING"
-]
-
-
 class QuestionSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         model = models.Question
@@ -32,7 +21,7 @@ class QuestionCategorySchema(BaseSchema):
         model = models.QuestionCategory
         dump_only = tuple()
 
-    category = EscapedStr(max_length=500, required=True, validate=[OneOf(categories)])
+    category = EscapedStr(max_length=500, required=True)
     score = ma.Int(required=False)
     questions = ma.Nested(QuestionSchema, many=True, required=False)
 

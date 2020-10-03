@@ -5,8 +5,6 @@ import click
 
 application = create_app(os.getenv('FLASK_CONFIG', 'default'))
 
-import handle_errors
-
 
 @application.cli.command("create_admin")
 @click.argument('username')
