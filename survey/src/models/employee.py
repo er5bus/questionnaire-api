@@ -16,6 +16,8 @@ class Employee(BaseUser):
     department_pk = db.Column(db.Integer, db.ForeignKey("department.pk"), nullable=True)
     department = db.relationship("src.models.company.Department", backref=db.backref("employees", lazy=True), foreign_keys=[department_pk])
 
+    questionnaires = db.relationship("src.models.questionnaire.Questionnaire")
+
 
 class MedicalRecord(Base):
 

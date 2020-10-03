@@ -16,6 +16,8 @@ class EmployeeSchema(BaseUserSchema):
 
     invitation = ma.Nested("EmployeeInvitationSchema", dump_only=True)
     medical_record = ma.Nested(MedicalRecordSchema, dump_only=True)
+    questionnaires = ma.Nested("src.schemas.questionnaire.QuestionnaireSchema", many=True, dump_only=True)
+
 
 
 class EmployeeInvitationSchema(BaseSchema):

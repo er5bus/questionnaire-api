@@ -7,7 +7,7 @@ class Questionnaire(Base):
     date = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
 
     employee_pk = db.Column(db.Integer, db.ForeignKey("baseuser.pk"), nullable=True)
-    employee = db.relationship("src.models.employee.Employee", foreign_keys=[employee_pk])
+    employee = db.relationship("src.models.employee.Employee", back_populates="questionnaires", lazy=True, foreign_keys=[employee_pk])
 
     question_categories = db.relationship("QuestionCategory")
 
