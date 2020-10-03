@@ -9,9 +9,7 @@ class NeedForInterventionView(generics.RetrieveAPIView):
 
     route_path = "/hrd_general_monitoring/need_for_intervention/<int:department_id>"
     route_name = "need_for_intervention_list"
-    lookup_field_and_url_kwarg = {"department_id": "department_pk"}
 
-    schema_class = schemas.QuestionCategorySchema
     #decorators = [ jwt_required ]
 
     def get_object(self, **kwargs):
@@ -35,12 +33,10 @@ class NeedForInterventionView(generics.RetrieveAPIView):
         return data
 
 
-class BreakdownOfFailures(generics.RetrieveAPIView):
+class BreakdownOfFailuresView(generics.RetrieveAPIView):
 
     route_path = "/hrd_general_monitoring/breakdown_of_failures/<int:department_id>"
     route_name = "breakdown_of_failures"
-
-    lookup_field_and_url_kwarg = {"department_id": "department_pk"}
 
     IN = "not_in"
     NOT_IN = "in"
@@ -51,21 +47,20 @@ class BreakdownOfFailures(generics.RetrieveAPIView):
             join(models.Employee, models.Employee.pk == models.Questionnaire.employee_pk). \
             join(models.Department, models.Department.pk == models.Employee.department_pk). \
             filter(models.Department.pk == kwargs.get("department_id")). \
-            group_by(models.QuestionCategory.category).all()
+            group_by(models.QuestionCategory.category). \
+            all()
 
         kpis = []
-        gpt = 0
         for row in rows:
-            gpt += row[1] if row[1] in (constants.PHYSIOTHERAPY, constants.OSTEOPATHY, constants.ERGONOMICS) else 0
             kpis.append({ "score": row[0], "category": row[1]})
         return kpis
 
-    def get_sum(self, kpis, categories, condition=IN):
+    def get_sum(self, kpis, categories, condition):
         sum_kpis = 0
         for kpis_row in kpis: 
-            if condition == IN:
+            if condition == self.IN:
                 sum_kpis += kpis_row["score"] if kpis_row["category"] in categories else 0
-            elif condition ==NOT_IN:
+            elif condition == self.NOT_IN:
                 sum_kpis += kpis_row["score"] if kpis_row["category"] not in categories else 0
         return sum_kpis
         
@@ -73,18 +68,22 @@ class BreakdownOfFailures(generics.RetrieveAPIView):
     def get_object(self, **kwargs):
         kpis = self.get_all_point(**kwargs)
 
-        psy_points = self.get_sum(kpis, (constants.PHYSIOTHERAPY, ), IN) 
-        osteo_physio_points = self.get_sum(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), IN)
-        all_points_except_osteo_physio = self.get_sum(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), NOT_IN)
+        psy_points=self.get_sum(kpis, (constants.PHYSIOTHERAPY,), self.IN) 
+        ergonomics_points = self.get_sum(kpis, (constants.ERGONOMICS,), self.IN)
+        coach_points = self.get_sum(kpis, (constants.COACH,), self.IN)
+        medicine_points = self.get_sum(kpis, (constants.MEDICINE,), self.IN)
+        osteo_physio_points = self.get_sum(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), self.IN)
+        all_points_except_osteo_physio = self.get_sum(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), self.NOT_IN)
         all_points_all_areas = ((osteo_physio_points or 1) / 2) + all_points_except_osteo_physio
 
+        print(all_points_all_areas, all_points_all_areas / 100)
         return {
-            "SumOfTotalPointsOfAllAreas": "{}%".format(all_points_all_areas),
-            "TMS": "{}%".format(1/2 * (osteo_physio_points) / (all_points_all_areas) * 100),
-            "RPS": "1%",#(sum of all psy points) / total points of all areas,
-            "ergonomics": "1%",#sum of ergo points / total points = (211/1334) * 100 = 16%
-            "nutrition": "1%",#sum of dietitian points / total points = (123/1334) * 100 = 9%
-            "PhysicalActivity": "1%"#sum of coach points / total points = (45/1334) * 100 = 3%
+            "SumOfTotalPointsOfAllAreas": "{0:.2f}".format(all_points_all_areas),
+            "TMS": "{0:.2f}%".format(1/2 * (osteo_physio_points) / (all_points_all_areas) * 100 ),
+            "RPS": "{0:.2f}%".format((psy_points / all_points_all_areas) * 100),
+            "ergonomics": "{0:.2f}%".format((ergonomics_points / all_points_all_areas) * 100),
+            "nutrition": "{0:.2f}%".format((medicine_points / all_points_all_areas) * 100),
+            "PhysicalActivity": "{0:.2f}%".format((coach_points / all_points_all_areas) * 100)
         }
 
 

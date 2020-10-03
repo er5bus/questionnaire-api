@@ -13,7 +13,7 @@ class QuestionnaireListView(generics.ListAPIView):
 
     lookup_field_and_url_kwarg = {"department_id": "department_pk"}
 
-    #decorators = [ jwt_required ]
+    decorators = [ jwt_required ]
 
     def get_object_query(self, **kwargs):
         return db.session.query(models.Questionnaire). \
@@ -33,7 +33,7 @@ class QuestionnaireListCreateView(generics.ListCreateAPIView):
 
     lookup_field_and_url_kwarg = {"employee_id": "employee_pk"}
 
-    #decorators = [ jwt_required ]
+    decorators = [ jwt_required ]
 
     def create(self, *args, **kwargs):
         self.employee = models.Employee.query.filter_by(pk=kwargs.get('employee_id')).first_or_404()
