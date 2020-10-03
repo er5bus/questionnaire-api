@@ -68,7 +68,7 @@ class BaseMethodMixin:
         model_class = self.model_class if not model_class else model_class
         return model_class.query.filter_by(**kwargs).first()
 
-    def serialize(self, data = [], many=False, schema_class=None):
+    def serialize(self, data=[], many=False, schema_class=None):
         serializer = self.schema_class(many=many) if not schema_class else schema_class(many=many)
         return serializer.dump(data)
 
@@ -91,7 +91,7 @@ class BaseMethodMixin:
         if errors:
             raise ValidationError(errors)
 
-    def deserialize(self, data = [], instance_object = None, partial=False, schema_class=None):
+    def deserialize(self, data=[], instance_object = None, partial=False, schema_class=None):
         try:
             serializer = self.schema_class() if not schema_class else schema_class()
             if instance_object:
