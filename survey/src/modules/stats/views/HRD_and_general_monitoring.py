@@ -68,7 +68,7 @@ class BreakdownOfFailuresView(generics.RetrieveAPIView):
     def get_object(self, **kwargs):
         kpis = self.get_all_point(**kwargs)
 
-        psy_points=self.get_sum(kpis, (constants.PHYSIOTHERAPY,), self.IN) 
+        psy_points=self.get_sum(kpis, (constants.PSYCHOLOGY,), self.IN)
         ergonomics_points = self.get_sum(kpis, (constants.ERGONOMICS,), self.IN)
         coach_points = self.get_sum(kpis, (constants.COACH,), self.IN)
         medicine_points = self.get_sum(kpis, (constants.MEDICINE,), self.IN)
