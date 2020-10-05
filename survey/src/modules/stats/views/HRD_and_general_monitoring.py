@@ -38,8 +38,8 @@ class BreakdownOfFailuresView(generics.RetrieveAPIView):
     route_path = "/hrd_general_monitoring/breakdown_of_failures/<int:department_id>"
     route_name = "breakdown_of_failures"
 
-    IN = "not_in"
-    NOT_IN = "in"
+    IN = 2
+    NOT_IN = 1
 
     def get_all_point(self, **kwargs):
         rows = db.session.query(func.sum(models.QuestionCategory.score).label("sum"), models.QuestionCategory.category.label("category")). \
@@ -57,7 +57,7 @@ class BreakdownOfFailuresView(generics.RetrieveAPIView):
 
     def get_sum(self, kpis, categories, condition):
         sum_kpis = 0
-        for kpis_row in kpis: 
+        for kpis_row in kpis:
             if condition == self.IN:
                 sum_kpis += kpis_row["score"] if kpis_row["category"] in categories else 0
             elif condition == self.NOT_IN:
@@ -89,3 +89,4 @@ class BreakdownOfFailuresView(generics.RetrieveAPIView):
 
     def serialize(self, data=[], many=False, schema_class=None):
         return data
+
