@@ -11,8 +11,8 @@ class DetailsOfTroublesView(generics.RetrieveAPIView):
     route_path = "/tms_monitoring/details_of_troubles/<int:department_id>"
     route_name = "details_of_troubles"
 
-    IN = 1
-    NOT_IN = 2
+    IN = 2
+    NOT_IN = 1
 
     def get_all_point(self, **kwargs):
         rows = db.session.query(
@@ -28,7 +28,7 @@ class DetailsOfTroublesView(generics.RetrieveAPIView):
             filter(models.Department.pk == kwargs.get("department_id")). \
             group_by(models.Question.area, models.QuestionCategory.category). \
             all()
-        print(rows)
+        #print(rows)
 
         area = []
         for row in rows:
@@ -39,13 +39,15 @@ class DetailsOfTroublesView(generics.RetrieveAPIView):
         sum_area = 0
         for kpis_row in kpis:
             if condition == self.IN:
-                sum_area += kpis_row["score"] if kpis_row["category"] in categories and kpis_row["area"] in areas else 1
+                sum_area += kpis_row["score"] if kpis_row["category"] in categories and kpis_row["area"] in areas else 0
             elif condition == self.NOT_IN:
-                sum_area += kpis_row["score"] if kpis_row["category"] not in categories and kpis_row["area"] in areas else 2
+                sum_area += kpis_row["score"] if kpis_row["category"] not in categories and kpis_row["area"] in areas else 0
         return sum_area
 
     def get_object(self, **kwargs):
         kpis = self.get_all_point(**kwargs)
+
+        # back
 
         phys_back_points = self.get_sum(
             kpis,
@@ -62,12 +64,84 @@ class DetailsOfTroublesView(generics.RetrieveAPIView):
             self.IN
         )
 
+        # upper_body_limbs
+        phys_upper_body_limbs_points = self.get_sum(
+            kpis,
+            (constants.PHYSIOTHERAPY,),
+            (constants.SHOULDERS, constants.ELBOW_WIRST_HAND),
+            self.IN
+        )
 
-        psy_points = self.get_sum_category(kpis, (constants.PSYCHOLOGY,), self.IN)
+        osteo_upper_body_limbs_points = self.get_sum(
+            kpis,
+            (constants.OSTEOPATHY,),
+            (constants.SHOULDERS, constants.ELBOW_WIRST_HAND),
+            self.IN
+        )
+
+        # lower_bodey_limbs
+        phys_lower_body_limbs_points = self.get_sum(
+            kpis,
+            (constants.PHYSIOTHERAPY,),
+            (constants.HIP, constants.KNEES, constants.LEG_FOOT),
+            self.IN
+        )
+
+        osteo_lower_body_limbs_points = self.get_sum(
+            kpis,
+            (constants.OSTEOPATHY,),
+            (constants.HIP, constants.KNEES, constants.LEG_FOOT),
+            self.IN
+        )
+
+        # headache
+
+        phys_headache_points = self.get_sum(
+            kpis,
+            (constants.PHYSIOTHERAPY,),
+            (constants.HEADACHE,),
+            self.IN
+
+        )
+
+        osteo_headache_points = self.get_sum(
+            kpis,
+            (constants.OSTEOPATHY,),
+            (constants.HEADACHE,),
+            self.IN
+        )
+
+        # abdominal_pains
+
+        phys_abdominal_pains_points = self.get_sum(
+            kpis,
+            (constants.PHYSIOTHERAPY,),
+            (constants.ABDOMINAL_PAIN,),
+            self.IN
+
+        )
+
+        osteo_abdominal_pains_points = self.get_sum(
+            kpis,
+            (constants.OSTEOPATHY,),
+            (constants.ABDOMINAL_PAIN,),
+            self.IN
+
+        )
+
+
+        phys_points = self.get_sum_category(kpis, (constants.PHYSIOTHERAPY,), self.IN)
         osteo_points = self.get_sum_category(kpis, (constants.OSTEOPATHY,), self.IN)
 
+
+
         return {
-            "tms_details_trouble_Back": "{0:.2f}".format((osteo_back_points + phys_back_points) / (psy_points+osteo_points) * 100)
+            "tms_details_trouble_Back": "{0:.2f}".format((osteo_back_points + phys_back_points) / (phys_points+osteo_points) * 100),
+            "tms_details_trouble_UpperBodyLimbs" : "{0:.2f}".format((osteo_upper_body_limbs_points + phys_upper_body_limbs_points) / (phys_points+osteo_points) * 100),
+            "tms_details_trouble_LowerBodyLimbs" : "{0:.2f}".format((osteo_lower_body_limbs_points + phys_lower_body_limbs_points) / (phys_points+osteo_points) * 100),
+            "tms_details_trouble_Head": "{0:.2f}".format((osteo_headache_points + phys_headache_points) / (phys_points + osteo_points) * 100),
+            "tms_details_trouble_Stomach": "{0:.2f}".format((osteo_abdominal_pains_points + phys_abdominal_pains_points) / (phys_points + osteo_points) * 100)
+
         }
 
     def get_sum_category(self, kpis, categories, condition):
