@@ -39,9 +39,9 @@ class DetailsOfTroublesView(generics.RetrieveAPIView):
         sum_area = 0
         for kpis_row in kpis:
             if condition == self.IN:
-                sum_area += kpis_row["score"] if kpis_row["category"] in categories and kpis_row["area"] in areas else 0
+                sum_area += kpis_row["score"] if kpis_row["category"] in categories and kpis_row["area"] in areas else 1
             elif condition == self.NOT_IN:
-                sum_area += kpis_row["score"] if kpis_row["category"] in categories and kpis_row["area"] in areas else 0
+                sum_area += kpis_row["score"] if kpis_row["category"] not in categories and kpis_row["area"] in areas else 2
         return sum_area
 
     def get_object(self, **kwargs):
@@ -61,13 +61,13 @@ class DetailsOfTroublesView(generics.RetrieveAPIView):
             (constants.CERVICAL, constants.LUMBAR_BUTTOCKS, constants.BACK_THORAX),
             self.IN
         )
-        print(osteo_back_points)
+
 
         psy_points = self.get_sum_category(kpis, (constants.PSYCHOLOGY,), self.IN)
         osteo_points = self.get_sum_category(kpis, (constants.OSTEOPATHY,), self.IN)
 
         return {
-            "formule": "{0:.2f}".format((osteo_back_points + phys_back_points) / (psy_points+osteo_points) * 100)
+            "tms_details_trouble_Back": "{0:.2f}".format((osteo_back_points + phys_back_points) / (psy_points+osteo_points) * 100)
         }
 
     def get_sum_category(self, kpis, categories, condition):
