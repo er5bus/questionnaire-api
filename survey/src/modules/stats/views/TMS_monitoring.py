@@ -8,7 +8,7 @@ from flask_jwt_extended import jwt_required, get_current_user
 
 class DetailsOfTroublesView(generics.RetrieveAPIView):
 
-    route_path = "/hrd_general_monitoring/details_of_troubles/<int:department_id>"
+    route_path = "/tms_monitoring/details_of_troubles/<int:department_id>"
     route_name = "details_of_troubles"
 
     IN = 1
@@ -61,7 +61,7 @@ class DetailsOfTroublesView(generics.RetrieveAPIView):
             (constants.CERVICAL, constants.LUMBAR_BUTTOCKS, constants.BACK_THORAX),
             self.IN
         )
-
+        print(osteo_back_points)
 
         psy_points = self.get_sum_category(kpis, (constants.PSYCHOLOGY,), self.IN)
         osteo_points = self.get_sum_category(kpis, (constants.OSTEOPATHY,), self.IN)
