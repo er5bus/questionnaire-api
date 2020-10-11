@@ -36,7 +36,7 @@ class QuestionnaireListCreateView(generics.ListCreateAPIView):
     decorators = [ jwt_required ]
 
     def create(self, *args, **kwargs):
-        self.employee = models.Employee.query.filter_by(pk=kwargs.get('employee_id')).first_or_404()
+        self.employee = models.Employee.query.filter_by(pk=kwargs.get("employee_id")).first_or_404()
         return super().create(*args, **kwargs)
 
     def perform_create(self, questionnaire):

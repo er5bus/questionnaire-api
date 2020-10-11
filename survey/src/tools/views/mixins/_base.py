@@ -50,7 +50,6 @@ class BaseMethodMixin:
                     filter_kwargs[self.lookup_field_and_url_kwarg[lookup_field]] = value
         return filter_kwargs
 
-    @functools.lru_cache(maxsize=128)
     def get_object(self, **kwargs):
         instance = self.get_object_query(**kwargs).one_or_none()
         if instance is None:
@@ -63,12 +62,13 @@ class BaseMethodMixin:
         paginator = self.get_object_query(**kwargs).paginate(page, item_per_page, error_out=False)
         return paginator
 
-    @functools.lru_cache(maxsize=128)
     def filter_unique_object(self, model_class=None, **kwargs):
         model_class = self.model_class if not model_class else model_class
         return model_class.query.filter_by(**kwargs).first()
 
     def serialize(self, data=[], many=False, schema_class=None):
+        if not schema_class and not self.schema_class:
+            return data
         serializer = self.schema_class(many=many) if not schema_class else schema_class(many=many)
         return serializer.dump(data)
 
@@ -85,8 +85,9 @@ class BaseMethodMixin:
                 current_object = self.filter_unique_object(**{ self.model_pk_attr: getattr(instance, self.model_pk_attr) })
             # check if the object already exist
             if (unique_object and (not current_object or not hasattr(current_object, self.model_pk_attr))) \
-                or (unique_object and current_object and hasattr(current_object, self.model_pk_attr) and hasattr(unique_object, self.model_pk_attr) and \
-                    getattr(unique_object, self.model_pk_attr) != getattr(current_object, self.model_pk_attr)):
+                    or (unique_object and current_object and hasattr(current_object, self.model_pk_attr) 
+                        and hasattr(unique_object, self.model_pk_attr) and \
+                        getattr(unique_object, self.model_pk_attr) != getattr(current_object, self.model_pk_attr)):
                 errors[camelcase(unique_field)] = "This field is already exist."
         if errors:
             raise ValidationError(errors)
@@ -105,3 +106,4 @@ class BaseMethodMixin:
 
     def raise_exception(self, errors):
         abort(400, errors.messages)
+
