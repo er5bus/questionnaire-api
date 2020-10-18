@@ -1,11 +1,25 @@
 IN = 2
 NOT_IN = 1
 
+EQUAL = 0
+GREATER_THAN = 1
+LESS_THAN = 2
+
 
 PREVENTIVE = "preventive"
 MODERATE = "moderate"
 IMPORTANT = "important"
 URGENT = "urgent"
+
+
+def compare_number(op, value, other_value):
+    if op == EQUAL:
+        return value == other_value
+    elif op == GREATER_THAN:
+        return value < other_value
+    elif op == LESS_THAN:
+        return value > other_value
+    return False
 
 
 def get_sum_by_category(kpis, categories, condition):
@@ -15,6 +29,16 @@ def get_sum_by_category(kpis, categories, condition):
             sum_kpis += kpis_row["category_score"] if kpis_row["category"] in categories else 0
         elif condition == NOT_IN:
             sum_kpis += kpis_row["category_score"] if kpis_row["category"] not in categories else 0
+    return sum_kpis
+
+
+def get_sum_by_category_and_employee_where_score(kpis, categories, condition, op, score):
+    sum_kpis = 0
+    for kpis_row in kpis:
+        if condition == IN:
+            sum_kpis += 1 if kpis_row["category"] in categories and compare_number(op, kpis_row["category_score"], score) else 0
+        elif condition == NOT_IN:
+            sum_kpis += 1 if kpis_row["category"] not in categories and compare_number(op, kpis_row["category_score"], score) else 0
     return sum_kpis
 
 

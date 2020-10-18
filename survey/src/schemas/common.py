@@ -10,7 +10,7 @@ class InvitationInfoSchema(BaseSchema):
         dump_only = tuple()
 
     email = EscapedStr(max_length=128, required=True, validate=[Length(max=128, min=1), Email()])
-    full_name = EscapedStr(max_length=128, required=True)
+    full_name = EscapedStr(max_length=128, required=False)
 
 
 class BaseInvitationSchema(BaseSchema):

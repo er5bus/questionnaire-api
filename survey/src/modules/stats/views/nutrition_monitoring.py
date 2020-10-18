@@ -11,16 +11,16 @@ class NutritionDetailsOfTroublesView(generics.RetrieveAPIView):
     route_name = "details_of_troubles_nutrition"
 
     def get_object(self, **kwargs):
-        kpis = queries.get_all_point_by_department_group_by_category(kwargs.get("department_id"))
+        kpis = queries.get_all_point_by_department_group_by_category_and_employee(kwargs.get("department_id"))
 
-        medicine_points = tools.get_sum_by_category(kpis, (constants.MEDICINE,), tools.IN)
-        osteo_physio_points = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.IN)
-        all_points_except_osteo_physio = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.NOT_IN)
-        all_points_all_areas = (osteo_physio_points / 2) + all_points_except_osteo_physio
+        all_employees = queries.get_all_employee_of_department(kwargs.get("department_id"))
+        answered = tools.get_sum_by_category_and_employee_where_score(kpis, (constants.MEDICINE, ), tools.IN, tools.LESS_THAN, 50)
+        other = all_employees - answered
 
         return {
-            "SumOfTotalPointsOfAllAreas": "{0:.2f}".format(all_points_all_areas),
-            "nutrition": "{0:.2f}%".format((medicine_points / all_points_all_areas) * 100),
+            "SumOfTotalEmployees": "{0:.2f}".format(all_employees),
+            "answered": "{0:.2f}%".format((answered/ all_employees) * 100),
+            "others": "{0:.2f}%".format((other/ all_employees) * 100)
         }
 
 

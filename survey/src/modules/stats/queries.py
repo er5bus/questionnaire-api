@@ -20,6 +20,35 @@ def get_all_point_by_department_group_by_category(department_pk):
     return kpis
 
 
+def get_all_employee_of_department(department_pk):
+    row = db.session.query(
+        func.count(models.Employee.pk).label("count_employee"),
+    ). \
+        join(models.Department, models.Employee.department_pk == models.Department.pk). \
+        filter(models.Department.pk == department_pk). \
+        scalar()
+
+    return row
+
+def get_all_point_by_department_group_by_category_and_employee(department_pk):
+    rows = db.session.query(
+        func.sum(models.QuestionCategory.score).label("category_score"),
+        models.QuestionCategory.category.label("category"),
+        models.Employee.pk.label("employee"),
+    ). \
+        join(models.Questionnaire, models.Questionnaire.pk == models.QuestionCategory.questionnaire_pk). \
+        join(models.Employee, models.Employee.pk == models.Questionnaire.employee_pk). \
+        join(models.Department, models.Department.pk == models.Employee.department_pk). \
+        filter(models.Department.pk == department_pk). \
+        group_by(models.QuestionCategory.category, models.Employee.pk). \
+        all()
+
+    kpis = []
+    for row in rows:
+        kpis.append({ "category_score": row[0], "category": row[1], "employee": row[2]})
+    return kpis
+
+
 def get_all_point_by_department_group_by_category_and_area(department_pk):
     rows = db.session.query(
         func.sum(models.QuestionCategory.score).label("category_score"),
@@ -37,7 +66,6 @@ def get_all_point_by_department_group_by_category_and_area(department_pk):
     kpis = []
     for row in rows:
         kpis.append({ "category_score": row[0], "category": row[1], "area_score": row[2], "area": row[3]})
-    print(kpis)
     return kpis
 
 

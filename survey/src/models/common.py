@@ -9,7 +9,7 @@ import uuid
 class InvitationInfo(Base, TimestampMixin):
 
     email = db.Column(db.String(128), unique=True)
-    full_name = db.Column(db.String(200))
+    full_name = db.Column(db.String(200), nullable=True)
 
     invitation_pk = db.Column(db.Integer, db.ForeignKey("baseinvitation.pk", ondelete="CASCADE"))
     invitation = db.relationship("BaseInvitation", back_populates="invitations", lazy=True, foreign_keys=[invitation_pk])

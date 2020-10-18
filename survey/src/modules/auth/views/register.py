@@ -1,4 +1,5 @@
 from .... import models, schemas, db
+from flask import abort
 from flask_jwt_extended import create_access_token
 from ....tools.views import generics
 
@@ -19,17 +20,23 @@ class BaseUserRegisterView(generics.CreateAPIView, generics.OptionsAPIView):
     def create (self, *args, **kwargs):
         self.invitation = models.BaseInvitation.query.filter_by(token=kwargs.get("token")).first_or_404()
 
-        (response, code) = super().create(self, *args, **kwargs)
-        
         if isinstance(self.invitation, models.ManagerInvitation):
             self.schema_class = schemas.ManagerSchema
-            self.create_manger(user)
+            self.model_class = models.Manager
         elif isinstance(self.invitation, models.EmployeeInvitation):
             self.schema_class = schemas.EmployeeSchema
-            self.create_employee(user)
+            self.model_class = models.Employee
+
+        super().create(self, *args, **kwargs)
         
+        if isinstance(self.invitation, models.ManagerInvitation):
+            self.create_manger(self.user)
+        elif isinstance(self.invitation, models.EmployeeInvitation):
+            self.create_employee(self.user)
+        
+        data = self.serialize(self.user)
         self.set_token_expiration()
-        return {**response, "access_token": create_access_token(identity=str(self.user.pk)) }, code
+        return { **data, "access_token": create_access_token(identity=str(self.user.pk)) }, 201
 
     def check_professional_email(self, professional_email):
         for invitation in self.invitation.invitations:
