@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required, get_current_user
 
 class HRDNeedForInterventionView(generics.RetrieveAPIView):
 
-    route_path = "/hrd_general_monitoring/need_for_intervention/<int:department_id>"
+    route_path = "/hrd-general-monitoring/need-for-intervention/<int:department_id>"
     route_name = "need_for_intervention_hrd"
 
     decorators = [ jwt_required ]
@@ -20,7 +20,7 @@ class HRDNeedForInterventionView(generics.RetrieveAPIView):
 
 class HRDBreakdownOfFailuresView(generics.RetrieveAPIView):
 
-    route_path = "/hrd_general_monitoring/breakdown_of_failures/<int:department_id>"
+    route_path = "/hrd-general-monitoring/breakdown-of-failures/<int:department_id>"
     route_name = "breakdown_of_failures_hrd"
 
     def get_object(self, **kwargs):

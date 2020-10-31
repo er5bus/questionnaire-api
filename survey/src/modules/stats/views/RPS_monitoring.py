@@ -7,7 +7,7 @@ from flask_jwt_extended import jwt_required, get_current_user
 
 class RPSDetailsOfTroublesView(generics.RetrieveAPIView):
 
-    route_path = "/rps_monitoring/details_of_troubles/<int:department_id>"
+    route_path = "/rps-monitoring/details-of-troubles/<int:department_id>"
     route_name = "details_of_troubles_rps"
 
     def get_object(self, **kwargs):
@@ -18,14 +18,16 @@ class RPSDetailsOfTroublesView(generics.RetrieveAPIView):
         all_points_except_osteo_physio = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.NOT_IN)
         all_points_all_areas = (osteo_physio_points / 2) + all_points_except_osteo_physio
 
+        stress = ((psy_points / all_points_all_areas) * 100 )
         return {
             "sumOfTotalPointsOfAllAreas": "{0:.2f}".format(all_points_all_areas),
-            "psychology": "{0:.2f}%".format( ((psy_points / all_points_all_areas) * 100 ) ),
+            "stress": stress,
+            "stressPer": "{0:.2f}%".format(stress),
         }
 
 
 class RPSNeedForInterventionView(generics.RetrieveAPIView):
-    route_path = "/rps_monitoring/need_for_intervention/<int:department_id>"
+    route_path = "/rps-monitoring/need-for-intervention/<int:department_id>"
     route_name = "need_for_intervention_rps"
 
     def get_object(self, **kwargs):

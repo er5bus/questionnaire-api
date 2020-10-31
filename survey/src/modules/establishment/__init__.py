@@ -7,7 +7,7 @@ api = Blueprint('establishment', __name__)
 
 # views
 from .views.company import CompanyListCreateView, CompanyRetriveAllView, CompanyRetrieveUpdateDestroyView
-from .views.department import DepartmentListCreateView, DepartmentRetrieveUpdateDestroyView
+from .views.department import DepartmentListCreateView, DepartmentRetrieveUpdateDestroyView, DepartmentAllView
 
 
 urls.add_url_rule(
@@ -16,5 +16,6 @@ urls.add_url_rule(
     CompanyListCreateView,
     CompanyRetriveAllView,
     DepartmentListCreateView,
-    DepartmentRetrieveUpdateDestroyView
+    DepartmentRetrieveUpdateDestroyView,
+    DepartmentAllView
 )

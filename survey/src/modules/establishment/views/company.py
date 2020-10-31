@@ -1,6 +1,6 @@
 from .... import models, schemas
 from ....tools.views import generics
-from flask import current_app
+from flask import current_app, jsonify
 from flask_jwt_extended import jwt_required, get_current_user
 
 
@@ -35,8 +35,8 @@ class CompanyRetriveAllView(generics.RetrieveAPIView):
     def serialize(self, companies, many=False):
         items = []
         for company in companies:
-            items.append({"value": str(company.id), "label": company.name })
-        return { "items": items }
+            items.append({"value": company.pk, "label": company.name })
+        return { "results": items }
 
 
 class CompanyRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):

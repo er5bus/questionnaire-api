@@ -7,7 +7,7 @@ from flask_jwt_extended import jwt_required, get_current_user
 
 class TMSDetailsOfTroublesView(generics.RetrieveAPIView):
 
-    route_path = "/tms_monitoring/details_of_troubles/<int:department_id>"
+    route_path = "/tms-monitoring/details-of-troubles/<int:department_id>"
     route_name = "details_of_troubles_tms"
 
     def get_object(self, **kwargs):
@@ -69,7 +69,7 @@ class TMSDetailsOfTroublesView(generics.RetrieveAPIView):
 
 
 class TMSNeedForInterventionView(generics.RetrieveAPIView):
-    route_path = "/tms_monitoring/need_for_intervention/<int:department_id>"
+    route_path = "/tms-monitoring/need-for-intervention/<int:department_id>"
     route_name = "need_for_intervention_tms"
 
     def get_object(self, **kwargs):

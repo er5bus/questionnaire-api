@@ -27,6 +27,30 @@ class DepartmentListCreateView(generics.ListCreateAPIView):
         super().perform_create(department)
 
 
+class DepartmentAllView(generics.RetrieveAPIView):
+
+    route_path = "/company/<int:company_id>/departments/all"
+    route_name = "department_list_all"
+
+    model_class = models.Department
+    schema_class = schemas.DepartmentSchema
+
+    unique_fields = ("name", )
+
+    lookup_field_and_url_kwarg = {"company_id": "company_pk"}
+
+    decorators = [ jwt_required ]
+
+    def get_object(self, model_class=None, **kwargs):
+        return self.get_object_query(**kwargs).all()
+
+    def serialize(self, departments, many=False):
+        items = []
+        for department in departments:
+            items.append({"value": department.pk, "label": department.name })
+        return { "results": items } 
+
+
 class DepartmentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     route_path = "/company/<int:company_id>/department/<int:id>"
     route_name = "department_retrieve_update_destroy"
