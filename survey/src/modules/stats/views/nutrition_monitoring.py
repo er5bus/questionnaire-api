@@ -23,8 +23,6 @@ class NutritionDetailsOfTroublesView(generics.RetrieveAPIView):
             "SumOfTotalEmployees": "{0:.2f}".format(all_employees),
             "answered": answered_result,
             "others": others_result,
-            "answeredPer": "{0:.2f}%".format(answered_result),
-            "othersPer": "{0:.2f}%".format(others_result)
         }
 
 

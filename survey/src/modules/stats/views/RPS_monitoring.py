@@ -22,7 +22,6 @@ class RPSDetailsOfTroublesView(generics.RetrieveAPIView):
         return {
             "sumOfTotalPointsOfAllAreas": "{0:.2f}".format(all_points_all_areas),
             "stress": stress,
-            "stressPer": "{0:.2f}%".format(stress),
         }
 
 

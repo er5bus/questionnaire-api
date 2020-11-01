@@ -34,12 +34,18 @@ class HRDBreakdownOfFailuresView(generics.RetrieveAPIView):
         all_points_except_osteo_physio = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.NOT_IN)
         all_points_all_areas = ((osteo_physio_points or 1) / 2) + all_points_except_osteo_physio
 
+        tms = 1/2 * (osteo_physio_points) / (all_points_all_areas) * 100
+        rps = (psy_points / all_points_all_areas) * 100
+        ergonomics = (ergonomics_points / all_points_all_areas) * 100
+        nutrition = (medicine_points / all_points_all_areas) * 100
+        physical_activity = (coach_points / all_points_all_areas) * 100
+
         return {
-            "sumOfTotalPointsOfAllAreas": "{0:.2f}".format(all_points_all_areas),
-            "TMS": "{0:.2f}%".format(1/2 * (osteo_physio_points) / (all_points_all_areas) * 100 ),
-            "RPS": "{0:.2f}%".format((psy_points / all_points_all_areas) * 100),
-            "ergonomics": "{0:.2f}%".format((ergonomics_points / all_points_all_areas) * 100),
-            "nutrition": "{0:.2f}%".format((medicine_points / all_points_all_areas) * 100),
-            "physicalActivity": "{0:.2f}%".format((coach_points / all_points_all_areas) * 100)
+            "sumOfTotalPointsOfAllAreas": all_points_all_areas,
+            "TMS": tms,
+            "RPS": rps,
+            "ergonomics": ergonomics,
+            "nutrition": nutrition,
+            "physicalActivity": physical_activity
         }
 

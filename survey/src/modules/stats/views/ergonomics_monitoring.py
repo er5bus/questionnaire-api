@@ -22,7 +22,6 @@ class ErgonomicsDetailsOfTroublesView(generics.RetrieveAPIView):
         return {
             "SumOfTotalPointsOfAllAreas": "{0:.2f}".format(all_points_all_areas),
             "ergonomics": ergonomics_result,
-            "ergonomicsPer": "{0:.2f}%".format(ergonomics_result),
         }
 
 

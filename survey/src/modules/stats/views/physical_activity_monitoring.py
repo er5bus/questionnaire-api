@@ -21,7 +21,6 @@ class PhysicalActivityDetailsOfTroublesView(generics.RetrieveAPIView):
         physical_activity_result = (coach_points / all_points_all_areas) * 100
         return {
             "sumOfTotalPointsOfAllAreas": "{0:.2f}".format(all_points_all_areas),
-            "physicalActivityPer": "{0:.2f}%".format(physical_activity_result),
             "physicalActivity": physical_activity_result
         }
 

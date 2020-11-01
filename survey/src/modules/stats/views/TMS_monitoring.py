@@ -66,12 +66,6 @@ class TMSDetailsOfTroublesView(generics.RetrieveAPIView):
         abdominal_pains_result = abdominal_pains_points and all_points and (abdominal_pains_points / all_points * 100)
 
         return {
-            "backPer": "{0:.2f}%".format(back_result),
-            "upperBodyLimbsPer" : "{0:.2f}%".format(upper_body_limbs_result),
-            "lowerBodyLimbsPer" : "{0:.2f}%".format(lower_body_limbs_result),
-            "headachePer": "{0:.2f}%".format(headache_result),
-            "abdominalPainsPer": "{0:.2f}%".format(abdominal_pains_result),
-
             "back": back_result,
             "upperBodyLimbs" : upper_body_limbs_result,
             "lowerBodyLimbs" : lower_body_limbs_result,
