@@ -16,11 +16,15 @@ class NutritionDetailsOfTroublesView(generics.RetrieveAPIView):
         all_employees = queries.get_all_employee_of_department(kwargs.get("department_id"))
         answered = tools.get_sum_by_category_and_employee_where_score(kpis, (constants.MEDICINE, ), tools.IN, tools.LESS_THAN, 50)
         other = all_employees - answered
-
+        
+        answered_result = (answered / all_employees) * 100
+        others_result = (other/ all_employees) * 100
         return {
             "SumOfTotalEmployees": "{0:.2f}".format(all_employees),
-            "answered": "{0:.2f}%".format((answered/ all_employees) * 100),
-            "others": "{0:.2f}%".format((other/ all_employees) * 100)
+            "answered": answered_result,
+            "others": others_result,
+            "answeredPer": "{0:.2f}%".format(answered_result),
+            "othersPer": "{0:.2f}%".format(others_result)
         }
 
 

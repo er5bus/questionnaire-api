@@ -18,9 +18,11 @@ class PhysicalActivityDetailsOfTroublesView(generics.RetrieveAPIView):
         all_points_except_osteo_physio = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.NOT_IN)
         all_points_all_areas = (osteo_physio_points / 2) + all_points_except_osteo_physio
 
+        physical_activity_result = (coach_points / all_points_all_areas) * 100
         return {
             "sumOfTotalPointsOfAllAreas": "{0:.2f}".format(all_points_all_areas),
-            "physicalActivity": "{0:.2f}%".format((coach_points / all_points_all_areas) * 100)
+            "physicalActivityPer": "{0:.2f}%".format(physical_activity_result),
+            "physicalActivity": physical_activity_result
         }
 
 

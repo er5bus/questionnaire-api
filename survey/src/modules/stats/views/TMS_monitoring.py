@@ -21,7 +21,7 @@ class TMSDetailsOfTroublesView(generics.RetrieveAPIView):
             (constants.CERVICAL, constants.LUMBAR_BUTTOCKS , constants.BACK_THORAX),
             tools.IN
         )
-        
+
 
         # upper_body_limbs
         upper_body_limbs_points = tools.get_sum_by_category_and_area(
@@ -59,12 +59,24 @@ class TMSDetailsOfTroublesView(generics.RetrieveAPIView):
 
         all_points = tools.get_sum_by_category(category_kpis, (constants.PHYSIOTHERAPY, constants.OSTEOPATHY), tools.IN)
 
+        back_result = back_points and all_points and (back_points / all_points * 100)
+        upper_body_limbs_result = upper_body_limbs_points and all_points and (upper_body_limbs_points / all_points * 100)
+        lower_body_limbs_result = lower_body_limbs_points and all_points and (lower_body_limbs_points / all_points * 100)
+        headache_result = headache_points and all_points and (headache_points / all_points * 100)
+        abdominal_pains_result = abdominal_pains_points and all_points and (abdominal_pains_points / all_points * 100)
+
         return {
-            "backPoints": "{0:.2f}%".format(back_points and all_points and (back_points / all_points * 100)),
-            "upperBodyLimbsPoints" : "{0:.2f}%".format(upper_body_limbs_points and all_points and (upper_body_limbs_points / all_points * 100)),
-            "lowerBodyLimbsPoints" : "{0:.2f}%".format(lower_body_limbs_points and all_points and (lower_body_limbs_points / all_points * 100)),
-            "headachePoints": "{0:.2f}%".format(headache_points and all_points and (headache_points / all_points * 100)),
-            "abdominalPainsPoints": "{0:.2f}%".format(abdominal_pains_points and all_points and (abdominal_pains_points / all_points * 100))
+            "backPer": "{0:.2f}%".format(back_result),
+            "upperBodyLimbsPer" : "{0:.2f}%".format(upper_body_limbs_result),
+            "lowerBodyLimbsPer" : "{0:.2f}%".format(lower_body_limbs_result),
+            "headachePer": "{0:.2f}%".format(headache_result),
+            "abdominalPainsPer": "{0:.2f}%".format(abdominal_pains_result),
+
+            "back": back_result,
+            "upperBodyLimbs" : upper_body_limbs_result,
+            "lowerBodyLimbs" : lower_body_limbs_result,
+            "headache": headache_result,
+            "abdominalPains": abdominal_pains_result
         }
 
 
@@ -76,29 +88,45 @@ class TMSNeedForInterventionView(generics.RetrieveAPIView):
         kpis = queries.get_all_point_by_department_group_by_category_and_area_and_employee(kwargs.get("department_id"))
 
         # back
-        cervical = tools.get_recurrence_area_by_employee(
+        back = tools.get_recurrence_area_by_employee(
             kpis,
             (constants.PHYSIOTHERAPY, constants.OSTEOPATHY),
-            (constants.CERVICAL,),
+            (constants.CERVICAL, constants.LUMBAR_BUTTOCKS , constants.BACK_THORAX),
             tools.IN
         )
 
-        back_thorax = tools.get_recurrence_area_by_employee(
+        upper_body_limbs = tools.get_recurrence_area_by_employee(
             kpis,
-            (constants.PHYSIOTHERAPY,),
-            (constants.BACK_THORAX,),
+            (constants.PHYSIOTHERAPY, constants.OSTEOPATHY),
+            (constants.SHOULDERS, constants.ELBOW_WIRST_HAND),
             tools.IN
         )
 
-        lumber_buttocks = tools.get_recurrence_area_by_employee(
+        lower_body_limbs = tools.get_recurrence_area_by_employee(
             kpis,
-            (constants.PHYSIOTHERAPY,),
-            (constants.LUMBAR_BUTTOCKS,),
+            (constants.PHYSIOTHERAPY, constants.OSTEOPATHY),
+            (constants.HIP, constants.KNEES, constants.LEG_FOOT),
+            tools.IN
+        )
+
+        headache = tools.get_recurrence_area_by_employee(
+            kpis,
+            (constants.PHYSIOTHERAPY, constants.OSTEOPATHY),
+            (constants.HEADACHE,),
+            tools.IN
+        )
+
+        abdominal_pains = tools.get_recurrence_area_by_employee(
+            kpis,
+            (constants.PHYSIOTHERAPY, constants.OSTEOPATHY),
+            (constants.ABDOMINAL_PAIN,),
             tools.IN
         )
 
         return {
-            "cervical" : cervical,
-            "backThorax" : back_thorax,
-            "lumberButtocks" : lumber_buttocks,
+            "back" : back,
+            "upperBodyLimbs" : upper_body_limbs,
+            "lowerBodyLimbs" : lower_body_limbs,
+            "headache": headache,
+            "abdominalPains": abdominal_pains
         }

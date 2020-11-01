@@ -18,9 +18,11 @@ class ErgonomicsDetailsOfTroublesView(generics.RetrieveAPIView):
         all_points_except_osteo_physio = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.NOT_IN)
         all_points_all_areas = (osteo_physio_points / 2) + all_points_except_osteo_physio
 
+        ergonomics_result = (ergonomics_points / all_points_all_areas) * 100
         return {
             "SumOfTotalPointsOfAllAreas": "{0:.2f}".format(all_points_all_areas),
-            "ergonomics": "{0:.2f}%".format((ergonomics_points / all_points_all_areas) * 100),
+            "ergonomics": ergonomics_result,
+            "ergonomicsPer": "{0:.2f}%".format(ergonomics_result),
         }
 
 
