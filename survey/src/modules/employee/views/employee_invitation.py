@@ -4,7 +4,6 @@ from flask_mail import Message
 from flask import current_app
 from flask_jwt_extended import jwt_required, get_current_user
 from datetime import datetime
-import uuid
 
 
 class EmployeeInvitationSendMailView(generics.CreateAPIView):
@@ -45,12 +44,13 @@ class EmployeeInvitationSendMailView(generics.CreateAPIView):
                 conn.send(message=message)
 
     def create(self, *args, **kwargs):
-        invitation = self.regenerate_token(**kwargs)
-        self.send_email(invitation)
+        invitation = EmployeeInvitationSendMailView.regenerate_token(self.get_object(**kwargs))
+        EmployeeInvitationSendMailView.send_email(invitation)
         return self.serialize(invitation, False), 200
 
-    def regenerate_token(self, **kwargs):
-        invitation = self.get_object( **kwargs )
+    @classmethod
+    def regenerate_token(cls, invitation):
+        import uuid
         invitation.token = uuid.uuid4()
         invitation.send_at = datetime.now()
         db.session.add(invitation)
@@ -86,7 +86,7 @@ class EmployeeInvitationListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, employee_invitation):
         employee_invitation.department = self.department
-        super().perform_create(employee_invitation)
+        employee_invitation = EmployeeInvitationSendMailView.regenerate_token(employee_invitation)
         EmployeeInvitationSendMailView.send_email(employee_invitation)
 
 
