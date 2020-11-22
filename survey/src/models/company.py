@@ -21,5 +21,5 @@ class Department(Base):
     name = db.Column(db.String(150), nullable=True)
     description = db.Column(db.Text, nullable=True)
 
-    company_pk = db.Column(db.Integer, db.ForeignKey("company.pk"))
-    company = db.relationship(Company, backref=db.backref("departments", lazy="joined"), foreign_keys=[company_pk])
+    company_pk = db.Column(db.Integer, db.ForeignKey("company.pk", ondelete="CASCADE"))
+    company = db.relationship(Company, backref=db.backref("departments", lazy="joined", cascade="all, delete-orphan"), foreign_keys=[company_pk])

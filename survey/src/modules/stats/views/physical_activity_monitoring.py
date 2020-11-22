@@ -1,8 +1,6 @@
 from .... import models, schemas, db
 from ....tools.views import generics
 from .. import constants, tools, queries
-from sqlalchemy import func
-from flask_jwt_extended import jwt_required, get_current_user
 
 
 class PhysicalActivityDetailsOfTroublesView(generics.RetrieveAPIView):

@@ -1,3 +1,6 @@
+from flask import Markup
+
+
 IN = 2
 NOT_IN = 1
 
@@ -10,6 +13,9 @@ PREVENTIVE = "preventive"
 MODERATE = "moderate"
 IMPORTANT = "important"
 URGENT = "urgent"
+
+def escape_string(string):
+    return Markup.unescape(string) if isinstance(string, str) else string
 
 
 def compare_number(op, value, other_value):

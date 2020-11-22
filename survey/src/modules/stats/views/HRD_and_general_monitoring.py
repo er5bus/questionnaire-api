@@ -29,7 +29,7 @@ class HRDBreakdownOfFailuresView(generics.RetrieveAPIView):
         psy_points=tools.get_sum_by_category(kpis, (constants.PSYCHOLOGY,), tools.IN)
         ergonomics_points = tools.get_sum_by_category(kpis, (constants.ERGONOMICS,), tools.IN)
         coach_points = tools.get_sum_by_category(kpis, (constants.COACH,), tools.IN)
-        medicine_points = tools.get_sum_by_category(kpis, (constants.MEDICINE,), tools.IN)
+        nutrition_points = tools.get_sum_by_category(kpis, (constants.NUTRITION,), tools.IN)
         osteo_physio_points = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.IN)
         all_points_except_osteo_physio = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.NOT_IN)
         all_points_all_areas = ((osteo_physio_points or 1) / 2) + all_points_except_osteo_physio
@@ -37,7 +37,7 @@ class HRDBreakdownOfFailuresView(generics.RetrieveAPIView):
         tms = 1/2 * (osteo_physio_points) / (all_points_all_areas) * 100
         rps = (psy_points / all_points_all_areas) * 100
         ergonomics = (ergonomics_points / all_points_all_areas) * 100
-        nutrition = (medicine_points / all_points_all_areas) * 100
+        nutrition = (nutrition_points / all_points_all_areas) * 100
         physical_activity = (coach_points / all_points_all_areas) * 100
 
         return {

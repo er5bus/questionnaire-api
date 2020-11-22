@@ -25,8 +25,8 @@ class BaseInvitation(Base, TimestampMixin):
     send_at = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
     is_expired = db.Column(db.Boolean, default=False)
 
-    accounts = db.relationship("BaseUser", back_populates="invitation")
-    invitations = db.relationship(InvitationInfo, back_populates="invitation", cascade="all, delete", passive_deletes=True, lazy=True)
+    accounts = db.relationship("BaseUser", back_populates="invitation", cascade="all, delete-orphan")
+    invitations = db.relationship(InvitationInfo, back_populates="invitation", lazy=True)
 
 
 class Role:
@@ -55,7 +55,7 @@ class BaseUser(Base, TimestampMixin):
     last_seen = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
     deleted_at = db.Column(db.DateTime, nullable=True)
 
-    invitation_pk = db.Column(db.Integer, db.ForeignKey("baseinvitation.pk"))
+    invitation_pk = db.Column(db.Integer, db.ForeignKey("baseinvitation.pk", ondelete="CASCADE"))
     invitation = db.relationship("BaseInvitation", back_populates="accounts")
 
 

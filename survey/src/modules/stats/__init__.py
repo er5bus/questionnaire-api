@@ -13,6 +13,7 @@ from .views.RPS_monitoring import RPSDetailsOfTroublesView, RPSNeedForInterventi
 from .views.nutrition_monitoring import NutritionDetailsOfTroublesView, NutritionNeedForInterventionView
 from .views.ergonomics_monitoring import ErgonomicsDetailsOfTroublesView, ErgonomicsNeedForInterventionView
 from .views.physical_activity_monitoring import PhysicalActivityDetailsOfTroublesView, PhysicalActivityNeedForInterventionView
+from .views.export_csv import ExportCSVView
 
 
 urls.add_url_rule(
@@ -28,5 +29,6 @@ urls.add_url_rule(
     ErgonomicsDetailsOfTroublesView, 
     ErgonomicsNeedForInterventionView,
     PhysicalActivityDetailsOfTroublesView, 
+    ExportCSVView,
     PhysicalActivityNeedForInterventionView
 )
