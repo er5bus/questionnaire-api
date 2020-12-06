@@ -1,25 +1,14 @@
 from .... import models, schemas, mail, db
 from ....tools.views import generics
 from flask_mail import Message
-from flask import current_app
+from flask import current_app, render_template
 from flask_jwt_extended import jwt_required, get_current_user
 from datetime import datetime
 
 
 class EmployeeInvitationSendMailView(generics.CreateAPIView):
 
-    message_html = """<h1>Hello {}!</h1>
-
-<a href={}>Here is your login link</a>
-<br/>
-
-<p>{}</p>
-<br />
-<p> If Login link does not work {}</p>
-<br/>
-<p>Best Regards,</p>
-<p>The Team.</p>
-"""
+    message_html_template = 'invitation-template.html'
     route_path = "/department/<int:department_id>/employee-invitation/<int:invitation_id>/send"
     route_name = "invitation_employee_send_mail"
 
@@ -35,11 +24,10 @@ class EmployeeInvitationSendMailView(generics.CreateAPIView):
         with mail.connect() as conn:
             for user_invitation in invitation.invitations:
                 message = Message(subject="Create Password", sender=current_app.config['FLASK_MAIL_SENDER'], recipients=[user_invitation.email])
-                message.html = cls.message_html.format(
-                    user_invitation.full_name,
-                    str(current_app.config['REGISTER_LINK']).format(invitation.token),
-                    invitation.subject,
-                    str(current_app.config['REGISTER_LINK']).format(invitation.token),
+                message.html = render_template(cls.message_html_template, 
+                    full_name=user_invitation.full_name,
+                    URL=str(current_app.config['REGISTER_LINK']).format(invitation.token),
+                    subject=invitation.subject
                 )
                 conn.send(message=message)
 

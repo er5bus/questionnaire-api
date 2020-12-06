@@ -13,7 +13,9 @@ class JsonEncodedDict(types.TypeDecorator):
             return json.dumps(value)
 
     def process_result_value(self, value, dialect):
-        if value is None:
+        #json.loads(str.encode(value, 'utf-8'))
+        if not value:
             return {}
         else:
             return json.loads(value)
+

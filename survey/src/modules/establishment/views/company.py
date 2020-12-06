@@ -1,6 +1,6 @@
-from .... import models, schemas
+from .... import models, schemas, db
 from ....tools.views import generics
-from flask import current_app, jsonify
+from flask import current_app, jsonify, Response
 from flask_jwt_extended import jwt_required, get_current_user
 
 
@@ -50,4 +50,3 @@ class CompanyRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     decorators = [ jwt_required ]
 
     lookup_field_and_url_kwarg = {"id": "pk"}
-

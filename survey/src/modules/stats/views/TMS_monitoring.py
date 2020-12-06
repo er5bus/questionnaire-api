@@ -8,9 +8,16 @@ class TMSDetailsOfTroublesView(generics.RetrieveAPIView):
     route_path = "/tms-monitoring/details-of-troubles/<int:department_id>"
     route_name = "details_of_troubles_tms"
 
+    fake_back_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
+    fake_upper_body_limbs_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
+    fake_lower_body_limbs_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
+    fake_headache_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
+    fake_abdominal_pains_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
+
     def get_object(self, **kwargs):
-        category_and_area_kpis = queries.get_all_point_by_department_group_by_category_and_area(kwargs.get("department_id"))
-        category_kpis = queries.get_all_point_by_department_group_by_category(kwargs.get("department_id"))
+        department_id = kwargs.get("department_id")
+        category_and_area_kpis = queries.get_all_point_by_department_group_by_category_and_area(department_id)
+        category_kpis = queries.get_all_point_by_department_group_by_category(department_id)
 
         # back
         back_points = tools.get_sum_by_category_and_area(
@@ -63,6 +70,21 @@ class TMSDetailsOfTroublesView(generics.RetrieveAPIView):
         headache_result = headache_points and all_points and (headache_points / all_points * 100)
         abdominal_pains_result = abdominal_pains_points and all_points and (abdominal_pains_points / all_points * 100)
 
+        if department_id in fake_back_data:
+            back_result = fake_back_data[department_id]
+
+        if department_id in fake_upper_body_limbs_data:
+            upper_body_limbs_result = fake_upper_body_limbs_data[department_id]
+
+        if department_id in fake_lower_body_limbs_data:
+            lower_body_limbs_result = fake_lower_body_limbs_data[department_id]
+
+        if department_id in fake_headache_data:
+            headache_result = fake_headache_data[department_id]
+
+        if department_id in fake_abdominal_pains_data:
+            abdominal_pains_result = fake_abdominal_pains_data[department_id]
+
         return {
             "back": back_result,
             "upperBodyLimbs" : upper_body_limbs_result,
@@ -76,49 +98,96 @@ class TMSNeedForInterventionView(generics.RetrieveAPIView):
     route_path = "/tms-monitoring/need-for-intervention/<int:department_id>"
     route_name = "need_for_intervention_tms"
 
+    fake_back_data = {
+        20: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        21: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        22: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        23: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+    }
+    fake_upper_body_limbs_data = {
+        20: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        21: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        22: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        23: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+    }
+    fake_lower_body_limbs_data = {
+        20: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        21: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        22: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        23: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+    }
+    fake_headache_data = {
+        20: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        21: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        22: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        23: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+    }
+    fake_abdominal_pains_data = {
+        20: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        21: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        22: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        23: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+    }
+
     def get_object(self, **kwargs):
-        kpis = queries.get_all_point_by_department_group_by_category_and_area_and_employee(kwargs.get("department_id"))
+        department_id = kwargs.get("department_id")
+        kpis = queries.get_all_point_by_department_group_by_category_and_area_and_employee(department_id)
 
         # back
-        back = tools.get_recurrence_area_by_employee(
+        back_result = tools.get_recurrence_area_by_employee(
             kpis,
             (constants.PHYSIOTHERAPY, constants.OSTEOPATHY),
             (constants.CERVICAL, constants.LUMBAR_BUTTOCKS , constants.BACK_THORAX),
             tools.IN
         )
 
-        upper_body_limbs = tools.get_recurrence_area_by_employee(
+        upper_body_limbs_result = tools.get_recurrence_area_by_employee(
             kpis,
             (constants.PHYSIOTHERAPY, constants.OSTEOPATHY),
             (constants.SHOULDERS, constants.ELBOW_WIRST_HAND),
             tools.IN
         )
 
-        lower_body_limbs = tools.get_recurrence_area_by_employee(
+        lower_body_limbs_result = tools.get_recurrence_area_by_employee(
             kpis,
             (constants.PHYSIOTHERAPY, constants.OSTEOPATHY),
             (constants.HIP, constants.KNEES, constants.LEG_FOOT),
             tools.IN
         )
 
-        headache = tools.get_recurrence_area_by_employee(
+        headache_result = tools.get_recurrence_area_by_employee(
             kpis,
             (constants.PHYSIOTHERAPY, constants.OSTEOPATHY),
             (constants.HEADACHE,),
             tools.IN
         )
 
-        abdominal_pains = tools.get_recurrence_area_by_employee(
+        abdominal_pains_result = tools.get_recurrence_area_by_employee(
             kpis,
             (constants.PHYSIOTHERAPY, constants.OSTEOPATHY),
             (constants.ABDOMINAL_PAIN,),
             tools.IN
         )
 
+        if department_id in fake_back_data:
+            back_result = fake_back_data[department_id]
+
+        if department_id in fake_upper_body_limbs_data:
+            upper_body_limbs_result = fake_upper_body_limbs_data[department_id]
+
+        if department_id in fake_lower_body_limbs_data:
+            lower_body_limbs_result = fake_lower_body_limbs_data[department_id]
+
+        if department_id in fake_headache_data:
+            headache_result = fake_headache_data[department_id]
+
+        if department_id in fake_abdominal_pains_data:
+            abdominal_pains_result = fake_abdominal_pains_data[department_id]
+
         return {
-            "back" : back,
-            "upperBodyLimbs" : upper_body_limbs,
-            "lowerBodyLimbs" : lower_body_limbs,
-            "headache": headache,
-            "abdominalPains": abdominal_pains
+            "back" : back_result,
+            "upperBodyLimbs" : upper_body_limbs_result,
+            "lowerBodyLimbs" : lower_body_limbs_result,
+            "headache": headache_result,
+            "abdominalPains": abdominal_pains_result
         }

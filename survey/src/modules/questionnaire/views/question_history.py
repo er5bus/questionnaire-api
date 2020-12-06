@@ -1,6 +1,7 @@
 from .... import models, schemas
 from ....tools.views import generics
 from flask import abort, request
+from flask import Response
 from flask_jwt_extended import jwt_required, get_current_user
 
 
@@ -14,7 +15,7 @@ class QuestionHistoryCreateRetrieveView(generics.CreateRetrieveAPIView):
     def retrieve(self, **kwargs):
         current_user = get_current_user()
         if not hasattr(current_user, "question_history"):
-            abort(401)
+            return Response(status=204)
         return current_user.question_history
 
     def create(self, *args, **kwargs):

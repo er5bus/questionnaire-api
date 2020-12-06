@@ -8,12 +8,12 @@ class DeleteMinxin(BaseMethodMixin):
     Delete model instance
     """
     def destroy (self, *args, **kwargs):
-        object_query = self.get_object_query(**kwargs)
-        self.perform_delete(object_query)
+        instance = self.get_object(**kwargs)
+        self.perform_delete(instance)
 
         return Response(status=204)
 
-    def perform_delete(self, object_query):
-        object_query.delete()
+    def perform_delete(self, instance):
+        db.session.delete(instance)
         db.session.commit()
 

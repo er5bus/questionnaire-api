@@ -49,7 +49,7 @@ class ManagerInvitationSendMailView(generics.CreateAPIView):
         return self.serialize(invitation, False), 200
 
     @classmethod
-    def regenerate_token(invitation):
+    def regenerate_token(cls,invitation):
         import uuid
         invitation.token = uuid.uuid4()
         invitation.send_at = datetime.now()
