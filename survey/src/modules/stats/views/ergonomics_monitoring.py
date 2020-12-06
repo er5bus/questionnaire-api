@@ -11,17 +11,20 @@ class ErgonomicsDetailsOfTroublesView(generics.RetrieveAPIView):
     fake_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
 
     def get_object(self, **kwargs):
-        department_id = kwargs.get("department_id")
-        kpis = queries.get_all_point_by_department_group_by_category(department_id)
+        try:
+            department_id = kwargs.get("department_id")
+            kpis = queries.get_all_point_by_department_group_by_category(department_id)
 
-        ergonomics_points = tools.get_sum_by_category(kpis, (constants.ERGONOMICS,), tools.IN)
-        osteo_physio_points = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.IN)
-        all_points_except_osteo_physio = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.NOT_IN)
-        all_points_all_areas = (osteo_physio_points / 2) + all_points_except_osteo_physio
-        
-        ergonomics_result = (ergonomics_points / all_points_all_areas) * 100
+            ergonomics_points = tools.get_sum_by_category(kpis, (constants.ERGONOMICS,), tools.IN)
+            osteo_physio_points = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.IN)
+            all_points_except_osteo_physio = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.NOT_IN)
+            all_points_all_areas = (osteo_physio_points / 2) + all_points_except_osteo_physio
+            ergonomics_result = (ergonomics_points / all_points_all_areas) * 100
+        except ZeroDivisionError:
+           ergonomics_result = 0
+           all_points_all_areas = 0
 
-        if department_id in fake_data:
+        if department_id in self.fake_data:
             ergonomics_result = fake_data[department_id]
         
         return {
@@ -52,7 +55,7 @@ class ErgonomicsNeedForInterventionView(generics.RetrieveAPIView):
             tools.IN
         )
 
-        if department_id in fake_data:
+        if department_id in self.fake_data:
             ergonomics_need_for_intervention = fake_data[department_id]
 
         return ergonomics_need_for_intervention

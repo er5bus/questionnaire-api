@@ -11,17 +11,21 @@ class PhysicalActivityDetailsOfTroublesView(generics.RetrieveAPIView):
     fake_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
 
     def get_object(self, **kwargs):
-        department_id = kwargs.get("department_id")
-        kpis = queries.get_all_point_by_department_group_by_category(department_id)
+        try:
+            department_id = kwargs.get("department_id")
+            kpis = queries.get_all_point_by_department_group_by_category(department_id)
 
-        coach_points = tools.get_sum_by_category(kpis, (constants.COACH,), tools.IN)
-        osteo_physio_points = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.IN)
-        all_points_except_osteo_physio = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.NOT_IN)
-        all_points_all_areas = (osteo_physio_points / 2) + all_points_except_osteo_physio
+            coach_points = tools.get_sum_by_category(kpis, (constants.COACH,), tools.IN)
+            osteo_physio_points = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.IN)
+            all_points_except_osteo_physio = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.NOT_IN)
+            all_points_all_areas = (osteo_physio_points / 2) + all_points_except_osteo_physio
 
-        physical_activity_result = (coach_points / all_points_all_areas) * 100
+            physical_activity_result = (coach_points / all_points_all_areas) * 100
+        except ZeroDivisionError:
+            physical_activity_result = 0
+            all_points_all_areas = 0
 
-        if department_id in fake_data:
+        if department_id in self.fake_data:
             physical_activity_result = fake_data[department_id]
 
         return {
@@ -52,7 +56,7 @@ class PhysicalActivityNeedForInterventionView(generics.RetrieveAPIView):
             tools.IN
         )
 
-        if department_id in fake_data:
+        if department_id in self.fake_data:
             coach_need_for_intervention = fake_data[department_id]
 
         return coach_need_for_intervention

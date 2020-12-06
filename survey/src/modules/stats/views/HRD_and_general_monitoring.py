@@ -54,15 +54,16 @@ class HRDNeedForInterventionView(generics.RetrieveAPIView):
     fake_gpt_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
 
     def get_object(self, **kwargs): 
+    
         department_id = kwargs.get("department_id")
         kpis = queries.get_all_point_by_department_group_by_category(department_id)
         gpt = tools.get_sum_by_category(kpis, (constants.PHYSIOTHERAPY, constants.OSTEOPATHY, constants.ERGONOMICS), tools.IN)
         gpt = gpt / 3 if gpt > 0 else 0
 
-        if department_id in fake_kpis_data:
+        if department_id in self.fake_kpis_data:
             kpis = fake_kpis_data[department_id]
 
-        if department_id in fake_gpt_data:
+        if department_id in self.fake_gpt_data:
             gpt = fake_gpt_data[department_id]
             
         return { "KPIS": kpis, "GPT": float("{0:.2f}".format(gpt)) }
@@ -97,19 +98,19 @@ class HRDBreakdownOfFailuresView(generics.RetrieveAPIView):
         nutrition = (nutrition_points / all_points_all_areas) * 100
         physical_activity = (coach_points / all_points_all_areas) * 100
 
-        if department_id in fake_tms_data:
+        if department_id in self.fake_tms_data:
             tms = fake_tms_data[department_id]
 
-        if department_id in fake_rps_data:
+        if department_id in self.fake_rps_data:
             rps = fake_rps_data[department_id]
 
-        if department_id in fake_ergonomics_data:
+        if department_id in self.fake_ergonomics_data:
             ergonomics = fake_ergonomics_data[department_id]
 
-        if department_id in fake_nutrition_data:
+        if department_id in self.fake_nutrition_data:
             nutrition = fake_nutrition_data[department_id]
 
-        if department_id in fake_physical_activity_data:
+        if department_id in self.fake_physical_activity_data:
             physical_activity = fake_physical_activity_data[department_id]
 
         return {

@@ -11,18 +11,22 @@ class RPSDetailsOfTroublesView(generics.RetrieveAPIView):
     fake_data = { 20: 60, 21: 60, 22: 40, 23: 10 }
 
     def get_object(self, **kwargs):
-        department_id = kwargs.get("department_id")
-        kpis = queries.get_all_point_by_department_group_by_category(department_id)
+        try:
+            department_id = kwargs.get("department_id")
+            kpis = queries.get_all_point_by_department_group_by_category(department_id)
 
-        psy_points=tools.get_sum_by_category(kpis, (constants.PSYCHOLOGY,), tools.IN)
-        osteo_physio_points = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.IN)
-        all_points_except_osteo_physio = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.NOT_IN)
-        all_points_all_areas = (osteo_physio_points / 2) + all_points_except_osteo_physio
-        
-        if department_id in fake_data:
-            stress = fake_data[department_id]
-        else:
+            psy_points=tools.get_sum_by_category(kpis, (constants.PSYCHOLOGY,), tools.IN)
+            osteo_physio_points = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.IN)
+            all_points_except_osteo_physio = tools.get_sum_by_category(kpis, (constants.OSTEOPATHY, constants.PHYSIOTHERAPY), tools.NOT_IN)
+            all_points_all_areas = (osteo_physio_points / 2) + all_points_except_osteo_physio
             stress = ((psy_points / all_points_all_areas) * 100 )
+        except ZeroDivisionError:
+            stress = 0
+            all_points_all_areas = 0
+
+        if department_id in self.fake_data:
+            stress = fake_data[department_id]
+        
         return {
             "sumOfTotalPointsOfAllAreas": "{0:.2f}".format(all_points_all_areas),
             "stress": stress,
@@ -51,7 +55,7 @@ class RPSNeedForInterventionView(generics.RetrieveAPIView):
             tools.IN
         )
 
-        if department_id in fake_data:
+        if department_id in self.fake_data:
             psy_need_for_intervention = fake_data[department_id]
 
         return psy_need_for_intervention
