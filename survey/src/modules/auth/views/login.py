@@ -1,7 +1,7 @@
 from .... import models, schemas, jwt, db
 from ....tools.views import generics
 from flask import request, abort
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from flask_jwt_extended import create_access_token
 
 
@@ -17,7 +17,7 @@ class BaseUserLoginView(generics.CreateAPIView, generics.OptionsAPIView):
     def post(self, *args, **kwargs):
         username_or_email = request.json.get("username_or_email", None)
         password = request.json.get("password", None)
-        current_user = models.BaseUser.query.filter(or_(models.BaseUser.email==username_or_email, models.BaseUser.username==username_or_email)).one_or_none()
+        current_user = models.BaseUser.query.filter(or_(func.lower(models.BaseUser.email)==func.lower(username_or_email), func.lower(models.BaseUser.username)==func.lower(username_or_email))).one_or_none()
         if current_user and current_user.check_password(password):
             if isinstance(current_user, models.Manager):
                 data = schemas.ManagerSchema(many=False).dump(current_user)

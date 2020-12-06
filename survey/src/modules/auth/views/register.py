@@ -40,7 +40,7 @@ class BaseUserRegisterView(generics.CreateAPIView, generics.OptionsAPIView):
 
     def check_professional_email(self, professional_email):
         for invitation in self.invitation.invitations:
-            if professional_email == invitation.email:
+            if professional_email.lower() == invitation.email.lower():
                 return True
         return False
 
