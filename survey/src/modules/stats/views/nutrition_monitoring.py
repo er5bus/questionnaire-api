@@ -27,10 +27,10 @@ class NutritionDetailsOfTroublesView(generics.RetrieveAPIView):
             others_result = 0
 
         if department_id in self.fake_answered_data:
-            answered_result = fake_answered_data[department_id]
+            answered_result = self.fake_answered_data[department_id]
 
         if department_id in self.fake_others_data:
-            others_result = fake_others_data[department_id]
+            others_result = self.fake_others_data[department_id]
  
         return {
             "SumOfTotalEmployees": "{0:.2f}".format(all_employees),
@@ -62,6 +62,6 @@ class NutritionNeedForInterventionView(generics.RetrieveAPIView):
         )
 
         if department_id in self.fake_data:
-            nutrition_need_for_intervention = fake_data[department_id]
+            nutrition_need_for_intervention = self.fake_data[department_id]
 
         return nutrition_need_for_intervention

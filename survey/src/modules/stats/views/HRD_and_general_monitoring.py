@@ -61,10 +61,10 @@ class HRDNeedForInterventionView(generics.RetrieveAPIView):
         gpt = gpt / 3 if gpt > 0 else 0
 
         if department_id in self.fake_kpis_data:
-            kpis = fake_kpis_data[department_id]
+            kpis = self.fake_kpis_data[department_id]
 
         if department_id in self.fake_gpt_data:
-            gpt = fake_gpt_data[department_id]
+            gpt = self.fake_gpt_data[department_id]
             
         return { "KPIS": kpis, "GPT": float("{0:.2f}".format(gpt)) }
 
@@ -99,19 +99,19 @@ class HRDBreakdownOfFailuresView(generics.RetrieveAPIView):
         physical_activity = (coach_points / all_points_all_areas) * 100
 
         if department_id in self.fake_tms_data:
-            tms = fake_tms_data[department_id]
+            tms = self.fake_tms_data[department_id]
 
         if department_id in self.fake_rps_data:
-            rps = fake_rps_data[department_id]
+            rps = self.fake_rps_data[department_id]
 
         if department_id in self.fake_ergonomics_data:
-            ergonomics = fake_ergonomics_data[department_id]
+            ergonomics = self.fake_ergonomics_data[department_id]
 
         if department_id in self.fake_nutrition_data:
-            nutrition = fake_nutrition_data[department_id]
+            nutrition = self.fake_nutrition_data[department_id]
 
         if department_id in self.fake_physical_activity_data:
-            physical_activity = fake_physical_activity_data[department_id]
+            physical_activity = self.fake_physical_activity_data[department_id]
 
         return {
             "sumOfTotalPointsOfAllAreas": all_points_all_areas,

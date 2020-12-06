@@ -26,7 +26,7 @@ class PhysicalActivityDetailsOfTroublesView(generics.RetrieveAPIView):
             all_points_all_areas = 0
 
         if department_id in self.fake_data:
-            physical_activity_result = fake_data[department_id]
+            physical_activity_result = self.fake_data[department_id]
 
         return {
             "sumOfTotalPointsOfAllAreas": "{0:.2f}".format(all_points_all_areas),
@@ -57,6 +57,6 @@ class PhysicalActivityNeedForInterventionView(generics.RetrieveAPIView):
         )
 
         if department_id in self.fake_data:
-            coach_need_for_intervention = fake_data[department_id]
+            coach_need_for_intervention = self.fake_data[department_id]
 
         return coach_need_for_intervention

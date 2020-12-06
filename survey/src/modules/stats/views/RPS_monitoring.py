@@ -25,7 +25,7 @@ class RPSDetailsOfTroublesView(generics.RetrieveAPIView):
             all_points_all_areas = 0
 
         if department_id in self.fake_data:
-            stress = fake_data[department_id]
+            stress = self.fake_data[department_id]
         
         return {
             "sumOfTotalPointsOfAllAreas": "{0:.2f}".format(all_points_all_areas),
@@ -56,6 +56,6 @@ class RPSNeedForInterventionView(generics.RetrieveAPIView):
         )
 
         if department_id in self.fake_data:
-            psy_need_for_intervention = fake_data[department_id]
+            psy_need_for_intervention = self.fake_data[department_id]
 
         return psy_need_for_intervention

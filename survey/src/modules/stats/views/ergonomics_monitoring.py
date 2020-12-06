@@ -25,7 +25,7 @@ class ErgonomicsDetailsOfTroublesView(generics.RetrieveAPIView):
            all_points_all_areas = 0
 
         if department_id in self.fake_data:
-            ergonomics_result = fake_data[department_id]
+            ergonomics_result = self.fake_data[department_id]
         
         return {
             "SumOfTotalPointsOfAllAreas": "{0:.2f}".format(all_points_all_areas),
@@ -56,6 +56,6 @@ class ErgonomicsNeedForInterventionView(generics.RetrieveAPIView):
         )
 
         if department_id in self.fake_data:
-            ergonomics_need_for_intervention = fake_data[department_id]
+            ergonomics_need_for_intervention = self.fake_data[department_id]
 
         return ergonomics_need_for_intervention

@@ -71,19 +71,19 @@ class TMSDetailsOfTroublesView(generics.RetrieveAPIView):
         abdominal_pains_result = abdominal_pains_points and all_points and (abdominal_pains_points / all_points * 100)
 
         if department_id in self.fake_back_data:
-            back_result = fake_back_data[department_id]
+            back_result = self.fake_back_data[department_id]
 
         if department_id in self.fake_upper_body_limbs_data:
-            upper_body_limbs_result = fake_upper_body_limbs_data[department_id]
+            upper_body_limbs_result = self.fake_upper_body_limbs_data[department_id]
 
         if department_id in self.fake_lower_body_limbs_data:
-            lower_body_limbs_result = fake_lower_body_limbs_data[department_id]
+            lower_body_limbs_result = self.fake_lower_body_limbs_data[department_id]
 
         if department_id in self.fake_headache_data:
-            headache_result = fake_headache_data[department_id]
+            headache_result = self.fake_headache_data[department_id]
 
         if department_id in self.fake_abdominal_pains_data:
-            abdominal_pains_result = fake_abdominal_pains_data[department_id]
+            abdominal_pains_result = self.fake_abdominal_pains_data[department_id]
 
         return {
             "back": back_result,
@@ -170,19 +170,19 @@ class TMSNeedForInterventionView(generics.RetrieveAPIView):
         )
 
         if department_id in self.fake_back_data:
-            back_result = fake_back_data[department_id]
+            back_result =  self.fake_back_data[department_id]
 
         if department_id in self.fake_upper_body_limbs_data:
-            upper_body_limbs_result = fake_upper_body_limbs_data[department_id]
+            upper_body_limbs_result = self.fake_upper_body_limbs_data[department_id]
 
         if department_id in self.fake_lower_body_limbs_data:
-            lower_body_limbs_result = fake_lower_body_limbs_data[department_id]
+            lower_body_limbs_result = self.fake_lower_body_limbs_data[department_id]
 
         if department_id in self.fake_headache_data:
-            headache_result = fake_headache_data[department_id]
+            headache_result = self.fake_headache_data[department_id]
 
         if department_id in self.fake_abdominal_pains_data:
-            abdominal_pains_result = fake_abdominal_pains_data[department_id]
+            abdominal_pains_result = self.fake_abdominal_pains_data[department_id]
 
         return {
             "back" : back_result,
