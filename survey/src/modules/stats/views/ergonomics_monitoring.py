@@ -8,7 +8,7 @@ class ErgonomicsDetailsOfTroublesView(generics.RetrieveAPIView):
     route_path = "/ergonomics-monitoring/details-of-troubles/<int:department_id>"
     route_name = "details_of_troubles_ergonomics"
     
-    fake_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
+    fake_data = { 20: 10, 21: 20, 22: 60, 23: 5 }
 
     def get_object(self, **kwargs):
         try:
@@ -38,10 +38,10 @@ class ErgonomicsNeedForInterventionView(generics.RetrieveAPIView):
     route_name = "need_for_intervention_ergonomics"
 
     fake_data = { 
-        20: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0}, 
-        21: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0}, 
-        22: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0}, 
-        23: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        20: {tools.PREVENTIVE: 40, tools.MODERATE: 30, tools.IMPORTANT: 20, tools.URGENT: 10}, 
+        21: {tools.PREVENTIVE: 30, tools.MODERATE: 30, tools.IMPORTANT: 20, tools.URGENT: 20}, 
+        22: {tools.PREVENTIVE: 10, tools.MODERATE: 20, tools.IMPORTANT: 20, tools.URGENT: 50}, 
+        23: {tools.PREVENTIVE: 60, tools.MODERATE: 20, tools.IMPORTANT: 10, tools.URGENT: 10},
     }
 
     def get_object(self, **kwargs):

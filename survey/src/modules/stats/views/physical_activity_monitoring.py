@@ -39,10 +39,10 @@ class PhysicalActivityNeedForInterventionView(generics.RetrieveAPIView):
     route_name = "need_for_intervention_physical_activity"
 
     fake_data = {
-        20: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
-        21: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
-        22: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
-        23: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        20: {tools.PREVENTIVE: 10, tools.MODERATE: 10, tools.IMPORTANT: 20, tools.URGENT: 60},
+        21: {tools.PREVENTIVE: 5, tools.MODERATE: 5, tools.IMPORTANT: 20, tools.URGENT: 70},
+        22: {tools.PREVENTIVE: 20, tools.MODERATE: 30, tools.IMPORTANT: 20, tools.URGENT: 30},
+        23: {tools.PREVENTIVE: 30, tools.MODERATE: 10, tools.IMPORTANT: 20, tools.URGENT: 40},
     }
 
     def get_object(self, **kwargs):

@@ -8,7 +8,7 @@ class RPSDetailsOfTroublesView(generics.RetrieveAPIView):
     route_path = "/rps-monitoring/details-of-troubles/<int:department_id>"
     route_name = "details_of_troubles_rps"
 
-    fake_data = { 20: 60, 21: 60, 22: 40, 23: 10 }
+    fake_data = { 20: 60, 21: 50, 22: 40, 23: 45 }
 
     def get_object(self, **kwargs):
         try:
@@ -38,10 +38,10 @@ class RPSNeedForInterventionView(generics.RetrieveAPIView):
     route_name = "need_for_intervention_rps"
 
     fake_data = {
-        20: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
-        21: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
-        22: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
-        23: {tools.PREVENTIVE: 0, tools.MODERATE: 0, tools.IMPORTANT: 0, tools.URGENT: 0},
+        20: {tools.PREVENTIVE: 20, tools.MODERATE: 40, tools.IMPORTANT: 20, tools.URGENT: 20},
+        21: {tools.PREVENTIVE: 60, tools.MODERATE: 20, tools.IMPORTANT: 10, tools.URGENT: 10},
+        22: {tools.PREVENTIVE: 45, tools.MODERATE: 5, tools.IMPORTANT: 30, tools.URGENT: 20},
+        23: {tools.PREVENTIVE: 10, tools.MODERATE: 30, tools.IMPORTANT: 50, tools.URGENT: 20},
     }
 
     def get_object(self, **kwargs):
