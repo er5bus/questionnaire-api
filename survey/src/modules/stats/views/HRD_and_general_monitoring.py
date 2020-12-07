@@ -13,42 +13,42 @@ class HRDNeedForInterventionView(generics.RetrieveAPIView):
 
     fake_kpis_data = { 
         20: [
-            { "category": constants.PHYSIOTHERAPY, "category_score":  10 },
-            { "category": constants.ERGONOMICS, "category_score":  10 },
-            { "category": constants.MEDICINE, "category_score":  50 },
-            { "category": constants.PSYCHOLOGY, "category_score":  60 },
-            { "category": constants.COACH, "category_score":  10 },
+            { "category": constants.PHYSIOTHERAPY, "category_score":  20 },
+            { "category": constants.ERGONOMICS, "category_score":  20 },
+            { "category": constants.MEDICINE, "category_score":  20 },
+            { "category": constants.PSYCHOLOGY, "category_score":  20 },
+            { "category": constants.COACH, "category_score":  20 },
             { "category": constants.NUTRITION, "category_score":  20 },
-            { "category": constants.OSTEOPATHY, "category_score":  60 },
-            { "category": constants.STOPP_WORKING, "category_score":  0 },
+            { "category": constants.OSTEOPATHY, "category_score":  20 },
+            { "category": constants.STOPP_WORKING, "category_score":  20 },
         ], 
         21: [
-            { "category": constants.PHYSIOTHERAPY, "category_score":  40 },
-            { "category": constants.ERGONOMICS, "category_score":  5 },
-            { "category": constants.MEDICINE, "category_score":  60 },
-            { "category": constants.PSYCHOLOGY, "category_score":  50 },
-            { "category": constants.COACH, "category_score":  50 },
+            { "category": constants.PHYSIOTHERAPY, "category_score":  20 },
+            { "category": constants.ERGONOMICS, "category_score":  20 },
+            { "category": constants.MEDICINE, "category_score":  20 },
+            { "category": constants.PSYCHOLOGY, "category_score":  20 },
+            { "category": constants.COACH, "category_score":  20 },
             { "category": constants.NUTRITION, "category_score":  20 },
-            { "category": constants.OSTEOPATHY, "category_score":  40 },
-            { "category": constants.STOPP_WORKING, "category_score":  0 },
+            { "category": constants.OSTEOPATHY, "category_score":  20 },
+            { "category": constants.STOPP_WORKING, "category_score":  20 },
         ], 22: [
-            { "category": constants.PHYSIOTHERAPY, "category_score":  40 },
-            { "category": constants.ERGONOMICS, "category_score":  60 },
-            { "category": constants.MEDICINE, "category_score":  80 },
-            { "category": constants.PSYCHOLOGY, "category_score":  40 },
-            { "category": constants.COACH, "category_score":  40 },
-            { "category": constants.NUTRITION, "category_score":  45 },
-            { "category": constants.OSTEOPATHY, "category_score":  60 },
-            { "category": constants.STOPP_WORKING, "category_score":  0 },
+            { "category": constants.PHYSIOTHERAPY, "category_score":  20 },
+            { "category": constants.ERGONOMICS, "category_score":  20 },
+            { "category": constants.MEDICINE, "category_score":  20 },
+            { "category": constants.PSYCHOLOGY, "category_score":  20 },
+            { "category": constants.COACH, "category_score":  20 },
+            { "category": constants.NUTRITION, "category_score":  20 },
+            { "category": constants.OSTEOPATHY, "category_score":  20 },
+            { "category": constants.STOPP_WORKING, "category_score":  20 },
         ], 23: [
-            { "category": constants.PHYSIOTHERAPY, "category_score":  10 },
-            { "category": constants.ERGONOMICS, "category_score":  5 },
-            { "category": constants.MEDICINE, "category_score":  45 },
-            { "category": constants.PSYCHOLOGY, "category_score":  30 },
-            { "category": constants.COACH, "category_score":  40 },
-            { "category": constants.NUTRITION, "category_score":  5 },
-            { "category": constants.OSTEOPATHY, "category_score":  45 },
-            { "category": constants.STOPP_WORKING, "category_score":  0 },
+            { "category": constants.PHYSIOTHERAPY, "category_score":  20 },
+            { "category": constants.ERGONOMICS, "category_score":  20 },
+            { "category": constants.MEDICINE, "category_score":  20 },
+            { "category": constants.PSYCHOLOGY, "category_score":  20 },
+            { "category": constants.COACH, "category_score":  20 },
+            { "category": constants.NUTRITION, "category_score":  20 },
+            { "category": constants.OSTEOPATHY, "category_score":  20 },
+            { "category": constants.STOPP_WORKING, "category_score":  20 },
         ]
     }
     fake_gpt_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
@@ -74,11 +74,11 @@ class HRDBreakdownOfFailuresView(generics.RetrieveAPIView):
     route_path = "/hrd-general-monitoring/breakdown-of-failures/<int:department_id>"
     route_name = "breakdown_of_failures_hrd"
 
-    fake_tms_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
-    fake_rps_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
-    fake_ergonomics_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
-    fake_nutrition_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
-    fake_physical_activity_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
+    fake_tms_data = { 20: 60, 21: 50, 22: 60, 23: 33 }
+    fake_rps_data = { 20: 60, 21: 50, 22: 40, 23: 25 }
+    fake_ergonomics_data = { 20: 10, 21: 5, 22: 60, 23: 5 }
+    fake_nutrition_data = { 20: 20, 21: 20, 22: 45, 23: 5 }
+    fake_physical_activity_data = { 20: 10, 21: 50, 22: 40, 23: 40 }
 
     def get_object(self, **kwargs):
         department_id = kwargs.get("department_id")
