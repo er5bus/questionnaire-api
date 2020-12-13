@@ -5,11 +5,11 @@ from .. import constants, tools, queries
 
 class NutritionDetailsOfTroublesView(generics.RetrieveAPIView):
 
-    route_path = "/nutrition-monitoring/details-of-troubles/<int:department_id>"
+    route_path = "/nutrition-monitoring/details-of-troubles/<signed_int:department_id>"
     route_name = "details_of_troubles_nutrition"
 
-    fake_answered_data = { 20: 60, 21: 60, 22: 45, 23: 70 }
-    fake_others_data = { 20: 40, 21: 40, 22: 55, 23: 30 }
+    fake_answered_data = { -1: 20, 20: 60, 21: 60, 22: 45, 23: 70 }
+    fake_others_data = { -1: 30, 20: 40, 21: 40, 22: 55, 23: 30 }
 
     def get_object(self, **kwargs):
         try:
@@ -40,10 +40,11 @@ class NutritionDetailsOfTroublesView(generics.RetrieveAPIView):
 
 
 class NutritionNeedForInterventionView(generics.RetrieveAPIView):
-    route_path = "/nutrition-monitoring/need-for-intervention/<int:department_id>"
+    route_path = "/nutrition-monitoring/need-for-intervention/<signed_int:department_id>"
     route_name = "need_for_intervention_nutrition"
     
     fake_data = {
+        -1: {tools.PREVENTIVE: 60, tools.MODERATE: 20, tools.IMPORTANT: 10, tools.URGENT: 10},
         20: {tools.PREVENTIVE: 60, tools.MODERATE: 20, tools.IMPORTANT: 10, tools.URGENT: 10},
         21: {tools.PREVENTIVE: 70, tools.MODERATE: 20, tools.IMPORTANT: 5, tools.URGENT: 5},
         22: {tools.PREVENTIVE: 50, tools.MODERATE: 30, tools.IMPORTANT: 20, tools.URGENT: 10},

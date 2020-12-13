@@ -37,6 +37,9 @@ def create_app(config_name):
         integrations=[FlaskIntegration()]
     )
 
+    from .tools.custom_url_path_params import SignedIntConverter
+    app.url_map.converters['signed_int'] = SignedIntConverter
+
     from .modules import api_blueprints
     for api_blueprint in api_blueprints:
         app.register_blueprint(api_blueprint, url_prefix="/api")

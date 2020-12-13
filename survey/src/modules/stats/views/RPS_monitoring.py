@@ -5,10 +5,10 @@ from .. import constants, tools, queries
 
 class RPSDetailsOfTroublesView(generics.RetrieveAPIView):
 
-    route_path = "/rps-monitoring/details-of-troubles/<int:department_id>"
+    route_path = "/rps-monitoring/details-of-troubles/<signed_int:department_id>"
     route_name = "details_of_troubles_rps"
 
-    fake_data = { 20: 60, 21: 50, 22: 40, 23: 45 }
+    fake_data = { -1: 40, 20: 60, 21: 50, 22: 40, 23: 45 }
 
     def get_object(self, **kwargs):
         try:
@@ -34,10 +34,11 @@ class RPSDetailsOfTroublesView(generics.RetrieveAPIView):
 
 
 class RPSNeedForInterventionView(generics.RetrieveAPIView):
-    route_path = "/rps-monitoring/need-for-intervention/<int:department_id>"
+    route_path = "/rps-monitoring/need-for-intervention/<signed_int:department_id>"
     route_name = "need_for_intervention_rps"
 
     fake_data = {
+        -1: {tools.PREVENTIVE: 20, tools.MODERATE: 40, tools.IMPORTANT: 20, tools.URGENT: 20},
         20: {tools.PREVENTIVE: 20, tools.MODERATE: 40, tools.IMPORTANT: 20, tools.URGENT: 20},
         21: {tools.PREVENTIVE: 60, tools.MODERATE: 20, tools.IMPORTANT: 10, tools.URGENT: 10},
         22: {tools.PREVENTIVE: 45, tools.MODERATE: 5, tools.IMPORTANT: 30, tools.URGENT: 20},

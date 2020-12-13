@@ -5,14 +5,14 @@ from .. import constants, tools, queries
 
 class TMSDetailsOfTroublesView(generics.RetrieveAPIView):
 
-    route_path = "/tms-monitoring/details-of-troubles/<int:department_id>"
+    route_path = "/tms-monitoring/details-of-troubles/<signed_int:department_id>"
     route_name = "details_of_troubles_tms"
 
-    fake_back_data = { 20: 40, 21: 65, 22: 80, 23: 30 }
-    fake_upper_body_limbs_data = { 20: 30, 21: 20, 22: 23, 23: 20 }
-    fake_lower_body_limbs_data = { 20: 5, 21: 10, 22: 15, 23: 10 }
-    fake_headache_data = { 20: 30, 21: 65, 22: 20, 23: 15 }
-    fake_abdominal_pains_data = { 20: 1, 21: 2, 22: 3, 23: 3 }
+    fake_back_data = { -1: 30, 20: 40, 21: 65, 22: 80, 23: 30 }
+    fake_upper_body_limbs_data = { -1: 22, 20: 30, 21: 20, 22: 23, 23: 20 }
+    fake_lower_body_limbs_data = { -1: 28, 20: 5, 21: 10, 22: 15, 23: 10 }
+    fake_headache_data = { -1: 25, 20: 30, 21: 65, 22: 20, 23: 15 }
+    fake_abdominal_pains_data = { -1: 2.44, 20: 1, 21: 2, 22: 3, 23: 3 }
 
     def get_object(self, **kwargs):
         department_id = kwargs.get("department_id")
@@ -95,34 +95,39 @@ class TMSDetailsOfTroublesView(generics.RetrieveAPIView):
 
 
 class TMSNeedForInterventionView(generics.RetrieveAPIView):
-    route_path = "/tms-monitoring/need-for-intervention/<int:department_id>"
+    route_path = "/tms-monitoring/need-for-intervention/<signed_int:department_id>"
     route_name = "need_for_intervention_tms"
 
     fake_back_data = {
+        -1: {tools.PREVENTIVE: 50, tools.MODERATE: 20, tools.IMPORTANT: 15, tools.URGENT: 15},
         20: {tools.PREVENTIVE: 50, tools.MODERATE: 20, tools.IMPORTANT: 15, tools.URGENT: 15},
         21: {tools.PREVENTIVE: 50, tools.MODERATE: 20, tools.IMPORTANT: 15, tools.URGENT: 15},
         22: {tools.PREVENTIVE: 10, tools.MODERATE: 20, tools.IMPORTANT: 30, tools.URGENT: 40},
         23: {tools.PREVENTIVE: 60, tools.MODERATE: 25, tools.IMPORTANT: 5, tools.URGENT: 10},
     }
     fake_upper_body_limbs_data = {
+        -1: {tools.PREVENTIVE: 50, tools.MODERATE: 10, tools.IMPORTANT: 10, tools.URGENT: 30},
         20: {tools.PREVENTIVE: 50, tools.MODERATE: 10, tools.IMPORTANT: 10, tools.URGENT: 30},
         21: {tools.PREVENTIVE: 40, tools.MODERATE: 20, tools.IMPORTANT: 10, tools.URGENT: 30},
         22: {tools.PREVENTIVE: 30, tools.MODERATE: 40, tools.IMPORTANT: 10, tools.URGENT: 20},
         23: {tools.PREVENTIVE: 60, tools.MODERATE: 20, tools.IMPORTANT: 10, tools.URGENT: 10},
     }
     fake_lower_body_limbs_data = {
+        -1: {tools.PREVENTIVE: 60, tools.MODERATE: 20, tools.IMPORTANT: 10, tools.URGENT: 10},
         20: {tools.PREVENTIVE: 60, tools.MODERATE: 20, tools.IMPORTANT: 10, tools.URGENT: 10},
         21: {tools.PREVENTIVE: 70, tools.MODERATE: 10, tools.IMPORTANT: 20, tools.URGENT: 10},
         22: {tools.PREVENTIVE: 60, tools.MODERATE: 30, tools.IMPORTANT: 10, tools.URGENT: 0},
         23: {tools.PREVENTIVE: 50, tools.MODERATE: 30, tools.IMPORTANT: 20, tools.URGENT: 0},
     }
     fake_headache_data = {
+        -1: {tools.PREVENTIVE: 10, tools.MODERATE: 10, tools.IMPORTANT: 30, tools.URGENT: 50},
         20: {tools.PREVENTIVE: 10, tools.MODERATE: 10, tools.IMPORTANT: 30, tools.URGENT: 50},
         21: {tools.PREVENTIVE: 20, tools.MODERATE: 30, tools.IMPORTANT: 30, tools.URGENT: 20},
         22: {tools.PREVENTIVE: 30, tools.MODERATE: 10, tools.IMPORTANT: 10, tools.URGENT: 50},
         23: {tools.PREVENTIVE: 40, tools.MODERATE: 10, tools.IMPORTANT: 10, tools.URGENT: 40},
     }
     fake_abdominal_pains_data = {
+        -1: {tools.PREVENTIVE: 50, tools.MODERATE: 30, tools.IMPORTANT: 20, tools.URGENT: 0},
         20: {tools.PREVENTIVE: 50, tools.MODERATE: 30, tools.IMPORTANT: 20, tools.URGENT: 0},
         21: {tools.PREVENTIVE: 30, tools.MODERATE: 20, tools.IMPORTANT: 30, tools.URGENT: 20},
         22: {tools.PREVENTIVE: 10, tools.MODERATE: 20, tools.IMPORTANT: 40, tools.URGENT: 30},

@@ -5,10 +5,10 @@ from .. import constants, tools, queries
 
 class PhysicalActivityDetailsOfTroublesView(generics.RetrieveAPIView):
 
-    route_path = "/physical-activity-monitoring/details-of-troubles/<int:department_id>"
+    route_path = "/physical-activity-monitoring/details-of-troubles/<signed_int:department_id>"
     route_name = "details_of_troubles_physical_activity"
 
-    fake_data = { 20: 10, 21: 10, 22: 60, 23: 5 }
+    fake_data = { -1: 33, 20: 10, 21: 10, 22: 60, 23: 5 }
 
     def get_object(self, **kwargs):
         try:
@@ -35,10 +35,11 @@ class PhysicalActivityDetailsOfTroublesView(generics.RetrieveAPIView):
 
 
 class PhysicalActivityNeedForInterventionView(generics.RetrieveAPIView):
-    route_path = "/physical-activity-monitoring/need-for-intervention/<int:department_id>"
+    route_path = "/physical-activity-monitoring/need-for-intervention/<signed_int:department_id>"
     route_name = "need_for_intervention_physical_activity"
 
     fake_data = {
+        -1: {tools.PREVENTIVE: 10, tools.MODERATE: 10, tools.IMPORTANT: 20, tools.URGENT: 60},
         20: {tools.PREVENTIVE: 10, tools.MODERATE: 10, tools.IMPORTANT: 20, tools.URGENT: 60},
         21: {tools.PREVENTIVE: 5, tools.MODERATE: 5, tools.IMPORTANT: 20, tools.URGENT: 70},
         22: {tools.PREVENTIVE: 20, tools.MODERATE: 30, tools.IMPORTANT: 20, tools.URGENT: 30},
